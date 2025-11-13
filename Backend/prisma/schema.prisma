@@ -1,0 +1,110 @@
+// se debe de ejecutar los siguiente comandos
+// npx prisma init
+// npx prisma db pull
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model carito {
+  id_carrito     Int       @id @default(autoincrement())
+  id_usuario     Int?
+  fecha_creacion DateTime? @default(now()) @db.DateTime(0)
+  usuarios       usuarios? @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "carito_ibfk_1")
+
+  @@index([id_usuario], map: "id_usuario")
+}
+
+model detalle_pedido {
+  id_detalle      Int        @id @default(autoincrement())
+  id_pedido       Int?
+  id_producto     Int?
+  cantidad        Int
+  precio_unitario Decimal    @db.Decimal(10, 2)
+  pedidos         pedidos?   @relation(fields: [id_pedido], references: [id_pedido], onDelete: NoAction, onUpdate: NoAction, map: "detalle_pedido_ibfk_1")
+  productos       productos? @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction, map: "detalle_pedido_ibfk_2")
+
+  @@index([id_pedido], map: "id_pedido")
+  @@index([id_producto], map: "id_producto")
+}
+
+model pedidos {
+  id_pedido       Int              @id @default(autoincrement())
+  id_usuario      Int?
+  fecha_pedido    DateTime?        @default(now()) @db.DateTime(0)
+  total           Decimal          @db.Decimal(10, 2)
+  estado          pedidos_estado
+  metodo_pago     String           @db.VarChar(100)
+  direccion_envio String           @db.VarChar(250)
+  detalle_pedido  detalle_pedido[]
+  usuarios        usuarios?        @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "pedidos_ibfk_1")
+
+  @@index([id_usuario], map: "id_usuario")
+}
+
+model productos {
+  id_producto    Int              @id @default(autoincrement())
+  nombre         String           @db.VarChar(100)
+  descripcion    String?          @db.Text
+  precio         Decimal          @db.Decimal(10, 2)
+  stock          Int
+  categoria      String?          @db.VarChar(50)
+  subcategoria   String?          @db.VarChar(50)
+  url_imagen     String?          @db.VarChar(255)
+  fecha_agregado DateTime?        @default(now()) @db.DateTime(0)
+  detalle_pedido detalle_pedido[]
+  resenas        resenas[]
+  wishlist       wishlist[]
+}
+
+model resenas {
+  id_resena    Int        @id @default(autoincrement())
+  id_usuario   Int?
+  id_producto  Int?
+  calificacion Int?
+  comentario   String?    @db.Text
+  fecha_resena DateTime?  @default(now()) @db.DateTime(0)
+  usuarios     usuarios?  @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "resenas_ibfk_1")
+  productos    productos? @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction, map: "resenas_ibfk_2")
+
+  @@index([id_producto], map: "id_producto")
+  @@index([id_usuario], map: "id_usuario")
+}
+
+model usuarios {
+  id_usuario     Int        @id @default(autoincrement())
+  nombre         String     @db.VarChar(50)
+  apellido       String     @db.VarChar(50)
+  email          String     @unique(map: "email") @db.VarChar(100)
+  contrase_a     String     @map("contraseña") @db.VarChar(255)
+  fecha_registro DateTime   @default(dbgenerated("(curdate())")) @db.Date
+  carito         carito[]
+  pedidos        pedidos[]
+  resenas        resenas[]
+  wishlist       wishlist[]
+}
+
+model wishlist {
+  id_wishlist    Int        @id @default(autoincrement())
+  id_usuario     Int?
+  id_producto    Int?
+  fecha_agregado DateTime?  @default(now()) @db.DateTime(0)
+  usuarios       usuarios?  @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "wishlist_ibfk_1")
+  productos      productos? @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction, map: "wishlist_ibfk_2")
+
+  @@index([id_producto], map: "id_producto")
+  @@index([id_usuario], map: "id_usuario")
+}
+
+enum pedidos_estado {
+  Pendiente
+  Procesando
+  Enviado
+  Entregado
+  Cancelado
+}
