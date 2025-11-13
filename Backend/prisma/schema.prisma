@@ -1,6 +1,7 @@
 // se debe de ejecutar los siguiente comandos
 // npx prisma init
 // npx prisma db pull
+// npx prisma generate
 
 generator client {
   provider = "prisma-client-js"
