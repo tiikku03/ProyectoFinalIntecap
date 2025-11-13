@@ -1,8 +1,8 @@
 /api
  ├── /users
- │     ├── GET /users               → Obtener lista de usuarios
+ │     ├── GET /               → Obtener lista de usuarios
  │     ├── GET /users/:id           → Obtener usuario por ID
- │     ├── POST /users              → Crear un nuevo usuario
+ │     ├── POST /crearUsuario       → Crear un nuevo usuario
  │     ├── PUT /users/:id           → Actualizar datos del usuario
  │     └── DELETE /users/:id        → Eliminar un usuario
  │
