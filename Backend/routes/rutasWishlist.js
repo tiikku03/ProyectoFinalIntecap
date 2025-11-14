@@ -90,7 +90,7 @@ router.get('/leerwishlist', async (req, res) => {
     }  
 });
 
-// Obtener producto en la wishlist por su ID
+
 router.get('/leerwishlist/:id', async (req, res) => {
    const wishlistId = parseInt(req.params.id);
    
@@ -104,6 +104,8 @@ router.get('/leerwishlist/:id', async (req, res) => {
     if (!wishlist) {
         return res.status(400).json({ error: "Producto en la wishlist no encontrado."});
     }
+   }catch(error){
+
    }
 });
 
