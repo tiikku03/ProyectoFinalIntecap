@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require('bcryptjs');
+const bcrypt = require("bcryptjs");
 const { PrismaClient } = require("@prisma/client");
-const e = require("express");
 const prisma = new PrismaClient();
 
 router.use(express.json());
@@ -61,7 +60,10 @@ router.post("/autorizarusuario", async (req, res) => {
     if (!usuario) {
       return res.status(404).send("Usuario no encontrado");
     }
-    const isPasswordValid = await bcrypt.compare(contraseña, usuario.contrase_a);
+    const isPasswordValid = await bcrypt.compare(
+      contraseña,
+      usuario.contrase_a
+    );
 
     if (!isPasswordValid) {
       return res.status(401).send("Contraseña incorrecta");
@@ -75,10 +77,9 @@ router.post("/autorizarusuario", async (req, res) => {
     });
   } catch (error) {
     console.error("Error al autorizar usuario:", error);
-    res.status(500).send("Error interno del servidor al autorizar el usuario.");
+    res.status(500).send("Error interno del servidor al autorizar el usuario");
   }
 });
-
 
 // ===================================================================
 // ELIMINAR USUARIO
@@ -88,19 +89,60 @@ router.delete("/eliminarusuario/:id", async (req, res) => {
   const idUsuario = parseInt(req.params.id);
 
   try {
-    await prisma.usuarios.delete({
-      where: {
-        id_usuario: idUsuario,
-      },
+    // Verificar que el usuario existe
+    const usuario = await prisma.usuarios.findUnique({
+      where: { id_usuario: idUsuario }
     });
 
-    res.status(200).json({ message: `Usuario con ID ${idUsuario} eliminado correctamente.` });
-  } catch(error){
-    res.status(500).json({ error: "Error interno del servidor al eliminar el usuario." });
+    if (!usuario) {
+      return res.status(404).json({ error: "Usuario no encontrado." });
+    }
+
+    // Eliminar en orden correcto para evitar errores de clave foránea
+    
+    // 1. Eliminar carrito del usuario
+    await prisma.carito.deleteMany({
+      where: { id_usuario: idUsuario }
+    });
+
+
+    await prisma.resenas.deleteMany({
+      where: { id_usuario: idUsuario }
+    });
+
+    await prisma.wishlist.deleteMany({
+      where: { id_usuario: idUsuario }
+    });
+
+    const pedidos = await prisma.pedidos.findMany({
+      where: { id_usuario: idUsuario }
+    });
+
+    for (let pedido of pedidos) {
+      await prisma.detalle_pedido.deleteMany({
+        where: { id_pedido: pedido.id_pedido }
+      });
+    }
+
+
+    await prisma.pedidos.deleteMany({
+      where: { id_usuario: idUsuario }
+    });
+
+    await prisma.usuarios.delete({
+      where: { id_usuario: idUsuario }
+    });
+
+    res.status(200).json({
+      message: `Usuario con ID ${idUsuario} eliminado correctamente.`,
+    });
+  } catch (error) {
+    console.error("Error al eliminar usuario:", error);
+    res.status(500).json({ 
+      error: "Error interno del servidor al eliminar el usuario.",
+      detalle: error.message 
+    });
   }
 });
-
-
-
 
 module.exports = router;
