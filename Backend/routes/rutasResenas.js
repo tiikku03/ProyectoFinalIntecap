@@ -6,49 +6,84 @@ const prisma = new PrismaClient();
 // Middleware para que el router pueda leer JSON
 router.use(express.json());
 
+
+// ===================================================================
 // --- 1. CREATE (Crear una nueva reseña) ---
-router.post('/crearresenia', async (req, res) => {
+// ===================================================================
+router.post('/crearresena', async (req, res) => {
     const { id_usuario, id_producto, calificacion, comentario } = req.body;
     
     try {
-        // Validación: se valida si ya existe una reseña del mismo usuario para el mismo producto
-        let localizandoResena = await prisma.resenas.findFirst({
+        // Convertir a números enteros
+        const usuarioId = parseInt(id_usuario);
+        const productoId = parseInt(id_producto);
+        const calif = parseInt(calificacion);
+
+        // Verificar que los IDs sean válidos
+        if (isNaN(usuarioId) || isNaN(productoId) || isNaN(calif)) {
+            return res.status(400).json({ error: "Los IDs y calificación deben ser números válidos." });
+        }
+
+        // Verificar que el usuario existe
+        const usuario = await prisma.usuarios.findUnique({
+            where: { id_usuario: usuarioId }
+        });
+
+        if (!usuario) {
+            return res.status(404).json({ error: `No existe el usuario con ID ${usuarioId}` });
+        }
+
+        // Verificar que el producto existe
+        const producto = await prisma.productos.findUnique({
+            where: { id_producto: productoId }
+        });
+
+        if (!producto) {
+            return res.status(404).json({ error: `No existe el producto con ID ${productoId}` });
+        }
+
+        // Validación: verificar si ya existe una reseña
+        const localizandoResena = await prisma.resenas.findFirst({
             where: { 
-                id_usuario: Number(id_usuario),
-                id_producto: Number(id_producto)
+                id_usuario: usuarioId,
+                id_producto: productoId
             }
-        })
+        });
 
         if (localizandoResena) {
             return res.status(400).json({ error: "Ya existe una reseña de este usuario para este producto." });
         }
 
-        // Creando la nueva reseña
-        const nuevaResena = await prisma.resenas.create({
+        // Crear la nueva reseña
+        const nuevaresena = await prisma.resenas.create({
             data: {
-                id_usuario: Number(id_usuario),
-                id_producto: Number(id_producto),
-                calificacion: Number(calificacion),
+                id_usuario: usuarioId,
+                id_producto: productoId,
+                calificacion: calif,
                 comentario: comentario
             }
         });
 
         res.status(201).json({ 
             message: "Reseña creada correctamente",
-            data: nuevaResena 
+            data: nuevaresena 
         });
 
     } catch (error) {
         console.error("Error al crear reseña:", error);
-        res.status(500).json({ error: "Error interno del servidor al crear la reseña.", detalle: error.message });
+        res.status(500).json({ 
+            error: "Error interno del servidor al crear la reseña.", 
+            detalle: error.message 
+        });
     }
 });
 
-
+// ===================================================================
 // --- 2. READ (Leer/Obtener reseñas) ---
+// ===================================================================
 
 // a. Obtener todas las reseñas
-router.get('/resenas', async (req, res) => {
+router.get('/leerresena', async (req, res) => {
     try {
         const resenas = await prisma.resenas.findMany();
         res.status(200).json(resenas);
@@ -59,7 +94,7 @@ router.get('/resenas', async (req, res) => {
 });
 
 // b. Obtener una reseña por su ID
-router.get('/resenas/:id', async (req, res) => {
+router.get('/leerresena/:id', async (req, res) => {
     const idResena = parseInt(req.params.id);
 
     try {
@@ -80,18 +115,29 @@ router.get('/resenas/:id', async (req, res) => {
     }
 });
 
-// --- 3. UPDATE (Actualizar una reseña) ---
-router.put('/resenas/:id', async (req, res) => {
+// ===================================================================
+// --- 3. UPDATE (Actualizar una reseña) 
+// ===================================================================
+
+router.put('/actualizarresena/:id', async (req, res) => {
     const idResena = parseInt(req.params.id);
     const { calificacion, comentario } = req.body;
 
     try {
+        // Convertir calificación a número entero
+        const calif = parseInt(calificacion);
+
+        // Validar que calificación sea un número válido
+        if (isNaN(calif)) {
+            return res.status(400).json({ error: "La calificación debe ser un número válido." });
+        }
+
         const resenaActualizada = await prisma.resenas.update({
             where: {
                 id_resena: idResena
             },
             data: {
-                calificacion: calificacion,
+                calificacion: calif,
                 comentario: comentario
             },
         });
@@ -109,8 +155,11 @@ router.put('/resenas/:id', async (req, res) => {
     }
 });
 
+// ===================================================================
 // --- 4. DELETE (Eliminar una reseña) ---
-router.delete('/resenas/:id', async (req, res) => {
+// ===================================================================
+
+router.delete('/eliminarresena/:id', async (req, res) => {
     const idResena = parseInt(req.params.id);
 
     try {
