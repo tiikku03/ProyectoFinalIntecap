@@ -26,7 +26,6 @@ model detalle_pedido {
   id_pedido       Int?
   id_producto     Int?
   cantidad        Int
-  precio_unitario Decimal    @db.Decimal(10, 2)
   pedidos         pedidos?   @relation(fields: [id_pedido], references: [id_pedido], onDelete: NoAction, onUpdate: NoAction, map: "detalle_pedido_ibfk_1")
   productos       productos? @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction, map: "detalle_pedido_ibfk_2")
 
