@@ -20,14 +20,13 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json()); 
 
-// para usar las rutas de usuario.js
 app.use('/usuarios', rutasUsuario);
 
-// para usar las rutas de resenas.js
 app.use('/resenas', rutasResenas);
 
-// para usar las rutas de wishlist.js
-app.use('/wishlist', rutasWishlist);
+app.use('/pedidos', rutasPedidos)
+
+app.use('/wishlist', rutasWishlist); 
 
 // para usar las rutas de productos.js
 app.use('/productos', rutasProductos);

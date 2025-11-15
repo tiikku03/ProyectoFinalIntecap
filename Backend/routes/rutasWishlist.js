@@ -90,7 +90,7 @@ router.get('/leerwishlist', async (req, res) => {
     }  
 });
 
-// Obtener producto en la wishlist por su ID
+
 router.get('/leerwishlist/:id', async (req, res) => {
    const wishlistId = parseInt(req.params.id);
 

@@ -1,8 +1,3 @@
-// se debe de ejecutar los siguiente comandos
-// npx prisma init
-// npx prisma db pull
-// npx prisma generate
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -22,13 +17,12 @@ model carito {
 }
 
 model detalle_pedido {
-  id_detalle      Int        @id @default(autoincrement())
-  id_pedido       Int?
-  id_producto     Int?
-  cantidad        Int
-  precio_unitario Decimal    @db.Decimal(10, 2)
-  pedidos         pedidos?   @relation(fields: [id_pedido], references: [id_pedido], onDelete: NoAction, onUpdate: NoAction, map: "detalle_pedido_ibfk_1")
-  productos       productos? @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction, map: "detalle_pedido_ibfk_2")
+  id_detalle  Int        @id @default(autoincrement())
+  id_pedido   Int?
+  id_producto Int?
+  cantidad    Int
+  pedidos     pedidos?   @relation(fields: [id_pedido], references: [id_pedido], onDelete: NoAction, onUpdate: NoAction, map: "detalle_pedido_ibfk_1")
+  productos   productos? @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction, map: "detalle_pedido_ibfk_2")
 
   @@index([id_pedido], map: "id_pedido")
   @@index([id_producto], map: "id_producto")
