@@ -72,12 +72,13 @@ model resenas {
 }
 
 model usuarios {
-  id_usuario     Int        @id @default(autoincrement())
-  nombre         String     @db.VarChar(50)
-  apellido       String     @db.VarChar(50)
-  email          String     @unique(map: "email") @db.VarChar(100)
-  contrase_a     String     @map("contraseña") @db.VarChar(255)
-  fecha_registro DateTime   @default(dbgenerated("(curdate())")) @db.Date
+  id_usuario     Int           @id @default(autoincrement())
+  nombre         String        @db.VarChar(50)
+  apellido       String        @db.VarChar(50)
+  email          String        @unique(map: "email") @db.VarChar(100)
+  contrase_a     String        @map("contraseña") @db.VarChar(255)
+  fecha_registro DateTime      @default(dbgenerated("(curdate())")) @db.Date
+  rol            usuarios_rol?
   carito         carito[]
   pedidos        pedidos[]
   resenas        resenas[]
@@ -102,4 +103,9 @@ enum pedidos_estado {
   Enviado
   Entregado
   Cancelado
+}
+
+enum usuarios_rol {
+  admin
+  usuario
 }

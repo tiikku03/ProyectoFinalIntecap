@@ -23,14 +23,14 @@ router.post("/crearpedido", async (req, res) => {
       req.body;
 
     // Si productos es un string, parsearlo a array
-    if (typeof productos === 'string') {
+    if (typeof productos === "string") {
       try {
         productos = JSON.parse(productos);
       } catch (e) {
-        return res.status(400).send({ 
-          ...response, 
+        return res.status(400).send({
+          ...response,
           success: false,
-          message: "El formato de productos es inválido" 
+          message: "El formato de productos es inválido"
         });
       }
     }
@@ -71,19 +71,19 @@ router.post("/crearpedido", async (req, res) => {
     res
       .status(200)
       .send({
-        ...response,
-        message: "agrecados correctamente",
-        data: productos,
-      });
+      ...response,
+      message: "agrecados correctamente",
+      data: productos,
+    });
   } catch (error) {
     console.error("Error al crear pedido:", error);
     res.status(500).json({ error: "Error interno del servidor." });
   }
 });
 
+
+router.delete("/canclarpedido", (req, res) => {});
+
 module.exports = router;
 
 
-router.delete('/canclarpedido',(req, res) => {
-
-})
