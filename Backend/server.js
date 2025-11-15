@@ -6,6 +6,7 @@ const rutasUsuario = require('./routes/rutasUsuarios.js');
 const rutasResenas = require('./routes/rutasResenas.js');
 const rutasWishlist = require('./routes/rutasWishlist.js');
 const rutasProductos = require('./routes/rutasProductos.js');
+const rutaPedidos = require('./routes/rutasPedidos.js')
 const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();

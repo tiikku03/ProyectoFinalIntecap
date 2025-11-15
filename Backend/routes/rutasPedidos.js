@@ -48,7 +48,7 @@ router.post("/crearpedido", async (req, res) => {
         .send({ ...response, message: "todos los campos son obligatorios" });
     }
 
-    const agregarNuevoProducto = await prisma.pedidos.create({
+    const agregarNuevoPedido = await prisma.pedidos.create({
       data: {
         id_usuario: Number(usuario_id),
         metodo_pago: metodoPago,
@@ -62,7 +62,7 @@ router.post("/crearpedido", async (req, res) => {
       await prisma.detalle_pedido.create({
         data: {
           cantidad: Number(producto.cantidad),
-          id_pedido: agregarNuevoProducto.id_pedido,
+          id_pedido: agregarNuevoPedido.id_pedido,
           id_producto: Number(producto.productoId)
         },
       });
@@ -74,6 +74,7 @@ router.post("/crearpedido", async (req, res) => {
         ...response,
         message: "agrecados correctamente",
         data: productos,
+        id_pedido: agregarNuevoPedido.id_pedido
       });
   } catch (error) {
     console.error("Error al crear pedido:", error);
@@ -85,5 +86,7 @@ module.exports = router;
 
 
 router.delete('/canclarpedido',(req, res) => {
+
+
 
 })
