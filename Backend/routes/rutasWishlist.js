@@ -75,7 +75,7 @@ router.post('/crearwishlist', async (req, res) => {
 });
 
 // ===================================================================
-// --- 1. READ (Leer los productos en la wishlist) ---
+// --- 2. READ (Leer los productos en la wishlist) ---
 // ===================================================================
 router.get('/leerwishlist', async (req, res) => {
     try {
@@ -93,7 +93,7 @@ router.get('/leerwishlist', async (req, res) => {
 // Obtener producto en la wishlist por su ID
 router.get('/leerwishlist/:id', async (req, res) => {
    const wishlistId = parseInt(req.params.id);
-   
+
    try {
     const wishlist = await prisma.wishlist.findUnique({
         where: {
@@ -102,9 +102,100 @@ router.get('/leerwishlist/:id', async (req, res) => {
     });
 
     if (!wishlist) {
-        return res.status(400).json({ error: "Producto en la wishlist no encontrado."});
+        return res.status(404).json({ error: "Producto en la wishlist no encontrado."});
     }
+    
+    res.status(200).json(wishlist);
+   } catch (error) {
+    console.error("Error al obtener el producto en la wishlist por ID:", error);
+    res.status(500).json({
+        error: "Error interno del servidor.",
+        detalle: error.message
+    });
    }
+});
+
+// Obtener todos los productos en la wishlist de un usuario
+router.get('/usuario/:id_usuario', async (req, res) => {
+    const usuarioId = parseInt(req.params.id_usuario);
+
+    try {
+        const wishlistUsuario = await prisma.wishlist.findMany({
+            where: {
+                id_usuario: usuarioId
+            },
+            include: {
+                productos: true  // incluye los datos completos del producto
+            }
+        });
+
+        if (wishlistUsuario.length === 0) {
+            return res.status(404).json({ message: "El usuario no tiene productos en su wishlist." });
+        }
+
+        res.status(200).json(wishlistUsuario);
+    } catch (error) {
+        console.error("Error al obtener wishlist del usuario:", error);
+        res.status(500).json({
+            error: "Error interno del servidor.",
+            detalle: error.message
+        });
+    }
+});
+
+// ===================================================================
+// --- 3. UPDATE (Actualizar una un producto en la wishlist) ---
+// ===================================================================
+
+router.put('/actualizarwishlist/:id', async (req, res) =>{
+    const wishlistId = parseInt(req.params.id);
+    const { id_usuario, id_producto, fecha_agregado } = req.body;
+    
+    try {
+        const wishlistActualizado = await prisma.wishlist.update({
+        where: {
+            id_wishlist: wishlistId
+        },
+        data: {
+            id_usuario: parseInt(id_usuario),
+            id_producto: parseInt(id_producto),
+            fecha_agregado: new Date(fecha_agregado)
+        },
+    });
+    res.status(200).json({
+        message: "Producto en la wishlist actualizado correctamente.",
+        wishlist: wishlistActualizado
+    });
+    } catch (error) {
+        if (error.code === 'P2025'){
+            return res.status(400).json({ error: "Prouducto en la wishlist no encontrado."});
+        }
+        console.error("Error al actualizar el producto en la wishlist:", error);
+        res.status(500).json({
+            error: "Error interno del servidor al actualizar el producto en la wishlist."
+        });
+    }
+});
+
+// ===================================================================
+// --- 4. DELETE (Eliminar un producto en la wishlist) ---
+// ===================================================================
+router.delete('/eliminarwishlist/:id', async (req, res) => {
+    const wishlistId = parseInt(req.params.id);
+
+    try {
+         await prisma.wishlist.delete({
+            where: {
+                id_wishlist: wishlistId
+            },
+         });
+         res.status(200).json({ message: 'producto en la wishlist eliminado correctamente.'});
+    } catch (error) {
+        console.error("Error al eliminar el producto en la wishlist:", error);
+        res.status(500).json({
+            error: "Error interno del servidor al eliminar el producto en la wishlist."
+        });
+    }
 });
 
 module.exports = router;  
