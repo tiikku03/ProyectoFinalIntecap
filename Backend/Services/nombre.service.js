@@ -31,3 +31,82 @@ export const accion = async (data) => {
 };
 */
 
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+
+async function cancelarPedido(data) {
+  const { idPedido } = data;
+  const pedido = await prisma.pedidos.findUnique({
+    where: { id_pedido: Number(idPedido) },
+  });
+  if (!pedido) {
+     throw {
+      status: 400,
+      message: "No se ha encontrado el pedido",
+      code: "CANNOT_CANCEL",
+    };
+  }
+  if (pedido.esstado === "Cancelado") {
+    throw new Error("El pedido ya está cancelado");
+  }
+  if (pedido.estado === "Enviado" || pedido.estado === "Entregado") {
+    throw new Error("No se puede cancelar un pedido que ya ha sido enviado o entregado");
+  }
+  const pedidoCancelado = await prisma.pedidos.update({
+    where: { id_pedido: Number(idPedido) },
+    data: { estado: "Cancelado" },
+  })
+
+  return pedidoCancelado;
+
+}
+
+const editarEstadoPedido = async (data) => {
+  const { idPedido, nuevoEstado } = data;
+  const pedido = await prisma.pedidos.findUnique({
+    where: { id_pedido: Number(idPedido) }
+  })
+
+  if (!pedido) {
+    throw{
+      status: 400,
+      message: "pedido no encontrado",
+      code: "ORDER_NOT_FOUND",
+    }
+  }
+
+  const pedidoActualizado = await prisma.pedidos.update({
+    where: { id_pedido: Number(idPedido) },
+    data: { estado: nuevoEstado }
+  })
+  return pedidoActualizado;
+}
+
+
+const agregarProductosPedido = async (data) => {
+  const { idPedido, productos } = data;
+
+  const pedido = await prisma.pedidos.findUnique({
+    where: { id_pedido: Number(idPedido) }
+  })
+
+  if (!pedido) {
+    throw{
+      status: 400,
+      message: "pedido no encontrado",
+      code: "ORDER_NOT_FOUND",
+    }
+  }
+
+  if(pedido.estado !== "Pendiente" && pedido.estado !== "Procesando") {
+    throw{
+      status: 400,
+      message: "No se pueden agregar productos a un pedido que no está pendiente",
+      code: "CANNOT_ADD_PRODUCTS",
+    }
+  }
+}
+
+
+
+export { cancelarPedido, editarEstadoPedido };

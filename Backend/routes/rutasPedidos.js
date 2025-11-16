@@ -82,7 +82,12 @@ router.post("/crearpedido", async (req, res) => {
 });
 
 
-router.delete("/canclarpedido", (req, res) => {});
+router.delete("/canclarpedido", (req, res) => {
+  
+});
+
+
+
 
 module.exports = router;
 
