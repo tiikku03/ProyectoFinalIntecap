@@ -5,9 +5,11 @@ import Footer from "../Components/layoutComponents/Footer.jsx";
 
 function CostumerLayout() {
     return(
-        <div>
+        <div className="flex flex-col min-h-screen">
             <Header />
-            <Outlet />
+            <main className="grow">
+                <Outlet />
+            </main>
             <Footer />
         </div>
     )
