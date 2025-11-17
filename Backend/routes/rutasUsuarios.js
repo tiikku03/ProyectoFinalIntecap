@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 router.use(express.json());
 
@@ -12,7 +13,7 @@ router.post("/crearusuario", async (req, res) => {
     const { nombre, apellido, correo, contraseña } = req.body;
 
     if (!nombre || !apellido || !correo || !contraseña) {
-      return res.status(400).send("Faltan datos obligatorios");
+      return errorResponse(res, 400, "Faltan datos obligatorios", "MISSING_FIELDS");
     }
 
     //validar si ya existe el correo
@@ -22,7 +23,7 @@ router.post("/crearusuario", async (req, res) => {
     console.log(localizandoUsuario);
 
     if (localizandoUsuario) {
-      return res.status(400).send("El correo ya esta registrado");
+      return errorResponse(res, 400, "El correo ya esta registrado", "EMAIL_EXISTS");
     }
 
     const hashedPassword = await bcrypt.hash(contraseña, 10);
@@ -41,12 +42,17 @@ router.post("/crearusuario", async (req, res) => {
       data: {
         id_usuario: nuevoUsuario.id_usuario
       }
-    })
+    });
 
-    res.send("Usuario creado correctamente");
+    return successResponse(res, 201, "Usuario creado correctamente", {
+      id_usuario: nuevoUsuario.id_usuario,
+      nombre: nuevoUsuario.nombre,
+      apellido: nuevoUsuario.apellido,
+      correo: nuevoUsuario.email
+    });
   } catch (error) {
     console.error("Error al crear usuario:", error);
-    res.status(500).send("Error interno del servidor al crear el usuario.");
+    return errorResponse(res, 500, "Error interno del servidor al crear el usuario", "INTERNAL_ERROR");
   }
 });
 
@@ -58,13 +64,13 @@ router.post("/autorizarusuario", async (req, res) => {
   try {
     const { correo, contraseña } = req.body;
     if (!correo || !contraseña) {
-      return res.status(400).send("Faltan datos obligatorios");
+      return errorResponse(res, 400, "Faltan datos obligatorios", "MISSING_FIELDS");
     }
     let usuario = await prisma.usuarios.findFirst({
       where: { email: correo },
     });
     if (!usuario) {
-      return res.status(404).send("Usuario no encontrado");
+      return errorResponse(res, 404, "Usuario no encontrado", "USER_NOT_FOUND");
     }
     const isPasswordValid = await bcrypt.compare(
       contraseña,
@@ -72,10 +78,10 @@ router.post("/autorizarusuario", async (req, res) => {
     );
 
     if (!isPasswordValid) {
-      return res.status(401).send("Contraseña incorrecta");
+      return errorResponse(res, 401, "Contraseña incorrecta", "INVALID_PASSWORD");
     }
 
-    return res.status(200).json({
+    return successResponse(res, 200, "Usuario autenticado correctamente", {
       id_usuario: usuario.id_usuario,
       nombre: usuario.nombre,
       apellido: usuario.apellido,
@@ -83,7 +89,7 @@ router.post("/autorizarusuario", async (req, res) => {
     });
   } catch (error) {
     console.error("Error al autorizar usuario:", error);
-    res.status(500).send("Error interno del servidor al autorizar el usuario");
+    return errorResponse(res, 500, "Error interno del servidor al autorizar el usuario", "INTERNAL_ERROR");
   }
 });
 
@@ -101,7 +107,7 @@ router.delete("/eliminarusuario/:id", async (req, res) => {
     });
 
     if (!usuario) {
-      return res.status(404).json({ error: "Usuario no encontrado." });
+      return errorResponse(res, 404, "Usuario no encontrado", "USER_NOT_FOUND");
     }
 
     // Eliminar en orden correcto para evitar errores de clave foránea
@@ -139,15 +145,10 @@ router.delete("/eliminarusuario/:id", async (req, res) => {
       where: { id_usuario: idUsuario }
     });
 
-    res.status(200).json({
-      message: `Usuario con ID ${idUsuario} eliminado correctamente.`,
-    });
+    return successResponse(res, 200, `Usuario con ID ${idUsuario} eliminado correctamente`, null);
   } catch (error) {
     console.error("Error al eliminar usuario:", error);
-    res.status(500).json({ 
-      error: "Error interno del servidor al eliminar el usuario.",
-      detalle: error.message 
-    });
+    return errorResponse(res, 500, "Error interno del servidor al eliminar el usuario", "INTERNAL_ERROR");
   }
 });
 

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client'); 
 const prisma = new PrismaClient();
+const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 // Middleware para que el router pueda leer JSON
 router.use(express.json());
@@ -21,7 +22,7 @@ router.post('/crearresena', async (req, res) => {
 
         // Verificar que los IDs sean válidos
         if (isNaN(usuarioId) || isNaN(productoId) || isNaN(calif)) {
-            return res.status(400).json({ error: "Los IDs y calificación deben ser números válidos." });
+            return errorResponse(res, 400, "Los IDs y calificación deben ser números válidos", "INVALID_IDS");
         }
 
         // Verificar que el usuario existe
@@ -30,7 +31,7 @@ router.post('/crearresena', async (req, res) => {
         });
 
         if (!usuario) {
-            return res.status(404).json({ error: `No existe el usuario con ID ${usuarioId}` });
+            return errorResponse(res, 404, `No existe el usuario con ID ${usuarioId}`, "USER_NOT_FOUND");
         }
 
         // Verificar que el producto existe
@@ -39,7 +40,7 @@ router.post('/crearresena', async (req, res) => {
         });
 
         if (!producto) {
-            return res.status(404).json({ error: `No existe el producto con ID ${productoId}` });
+            return errorResponse(res, 404, `No existe el producto con ID ${productoId}`, "PRODUCT_NOT_FOUND");
         }
 
         // Validación: verificar si ya existe una reseña
@@ -51,7 +52,7 @@ router.post('/crearresena', async (req, res) => {
         });
 
         if (localizandoResena) {
-            return res.status(400).json({ error: "Ya existe una reseña de este usuario para este producto." });
+            return errorResponse(res, 400, "Ya existe una reseña de este usuario para este producto", "REVIEW_EXISTS");
         }
 
         // Crear la nueva reseña
@@ -64,17 +65,11 @@ router.post('/crearresena', async (req, res) => {
             }
         });
 
-        res.status(201).json({ 
-            message: "Reseña creada correctamente",
-            data: nuevaresena 
-        });
+        return successResponse(res, 201, "Reseña creada correctamente", nuevaresena);
 
     } catch (error) {
         console.error("Error al crear reseña:", error);
-        res.status(500).json({ 
-            error: "Error interno del servidor al crear la reseña.", 
-            detalle: error.message 
-        });
+        return errorResponse(res, 500, "Error interno del servidor al crear la reseña", "INTERNAL_ERROR");
     }
 });
 
@@ -86,10 +81,10 @@ router.post('/crearresena', async (req, res) => {
 router.get('/leerresena', async (req, res) => {
     try {
         const resenas = await prisma.resenas.findMany();
-        res.status(200).json(resenas);
+        return successResponse(res, 200, "Reseñas obtenidas correctamente", resenas);
     } catch (error) {
         console.error("Error al obtener todas las reseñas:", error);
-        res.status(500).json({ error: "Error interno del servidor al obtener las reseñas." });
+        return errorResponse(res, 500, "Error interno del servidor al obtener las reseñas", "INTERNAL_ERROR");
     }
 });
 
@@ -105,13 +100,13 @@ router.get('/leerresena/:id', async (req, res) => {
         });
 
         if (!resena) {
-            return res.status(404).json({ error: "Reseña no encontrada." });
+            return errorResponse(res, 404, "Reseña no encontrada", "REVIEW_NOT_FOUND");
         }
 
-        res.status(200).json(resena);
+        return successResponse(res, 200, "Reseña obtenida correctamente", resena);
     } catch (error) {
         console.error("Error al obtener la reseña por ID:", error);
-        res.status(500).json({ error: "Error interno del servidor." });
+        return errorResponse(res, 500, "Error interno del servidor al obtener reseña", "INTERNAL_ERROR");
     }
 });
 
@@ -129,7 +124,7 @@ router.put('/actualizarresena/:id', async (req, res) => {
 
         // Validar que calificación sea un número válido
         if (isNaN(calif)) {
-            return res.status(400).json({ error: "La calificación debe ser un número válido." });
+            return errorResponse(res, 400, "La calificación debe ser un número válido", "INVALID_RATING");
         }
 
         const resenaActualizada = await prisma.resenas.update({
@@ -142,16 +137,13 @@ router.put('/actualizarresena/:id', async (req, res) => {
             },
         });
 
-        res.status(200).json({
-            message: "Reseña actualizada correctamente",
-            data: resenaActualizada
-        });
+        return successResponse(res, 200, "Reseña actualizada correctamente", resenaActualizada);
     } catch (error) {
         if (error.code === 'P2025') {
-            return res.status(404).json({ error: "No se encontró la reseña para actualizar." });
+            return errorResponse(res, 404, "No se encontró la reseña para actualizar", "REVIEW_NOT_FOUND");
         }
         console.error("Error al actualizar la reseña:", error);
-        res.status(500).json({ error: "Error interno del servidor al actualizar." });
+        return errorResponse(res, 500, "Error interno del servidor al actualizar", "INTERNAL_ERROR");
     }
 });
 
@@ -169,13 +161,13 @@ router.delete('/eliminarresena/:id', async (req, res) => {
             },
         });
 
-        res.status(200).json({ message: `Reseña con ID ${idResena} eliminada correctamente.` });
+        return successResponse(res, 200, `Reseña con ID ${idResena} eliminada correctamente`, null);
     } catch (error) {
         if (error.code === 'P2025') {
-            return res.status(404).json({ error: "No se encontró la reseña para eliminar." });
+            return errorResponse(res, 404, "No se encontró la reseña para eliminar", "REVIEW_NOT_FOUND");
         }
         console.error("Error al eliminar la reseña:", error);
-        res.status(500).json({ error: "Error interno del servidor al eliminar." });
+        return errorResponse(res, 500, "Error interno del servidor al eliminar", "INTERNAL_ERROR");
     }
 });
 

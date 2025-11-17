@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 // Middleware para que el router pueda leer JSON
 router.use(express.json());
@@ -16,7 +17,7 @@ router.post('/crearproducto', async (req, res) => {
         const { nombre, descripcion, precio, stock, categoria, subcategoria, url_imagen, fecha_agregado } = req.body;
         
         if (!nombre || !precio || !stock) {
-            return res.status(400).json({ error: "Faltan datos obligatorios (nombre, precio, stock)" });
+            return errorResponse(res, 400, "Faltan datos obligatorios (nombre, precio, stock)", "MISSING_FIELDS");
         }
 
         //Validar si ya existe el producto
@@ -25,7 +26,7 @@ router.post('/crearproducto', async (req, res) => {
         });
 
         if (localizandoProducto) {
-            return res.status(400).json({ error: "El producto ya está registrado" });
+            return errorResponse(res, 400, "El producto ya está registrado", "PRODUCT_EXISTS");
         }
 
         const nuevoProducto = await prisma.productos.create({
@@ -41,16 +42,10 @@ router.post('/crearproducto', async (req, res) => {
             },
         });
         
-        res.status(201).json({
-            message: "Producto creado correctamente.",
-            producto: nuevoProducto
-        });
+        return successResponse(res, 201, "Producto creado correctamente", nuevoProducto);
     } catch (error) {
         console.error("Error al crear producto:", error);
-        res.status(500).json({
-            error: "Error interno del servidor.",
-            detalle: error.message
-        });
+        return errorResponse(res, 500, "Error interno del servidor al crear producto", "INTERNAL_ERROR");
     }
 });
 
@@ -58,17 +53,53 @@ router.post('/crearproducto', async (req, res) => {
 // --- 2. READ (Obtener todos los productos) ---
 // ===================================================================
 
+/*
+GET /api/productos?page=1
+GET /api/productos?page=2
+GET /api/productos?page=3
+*/
+
 router.get('/leerproductos', async (req, res) => {
-    try {
-        const productos = await prisma.productos.findMany(); 
-        res.status(200).json(productos);
-    } catch (error) {
-        console.error("Error al obtener productos:", error);
-        res.status(500).json({
-            error: "Error interno del servidor al obtener productos."
-        });
+  try {
+    let page = parseInt(req.query.page, 10);
+
+    if (isNaN(page) || page < 1) {
+      page = 1;
     }
+
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    const [productos, total] = await Promise.all([
+      prisma.productos.findMany({
+        skip,
+        take: limit,
+        orderBy: { id_producto: "asc" }, 
+      }),
+      prisma.productos.count(),
+    ]);
+
+    const totalPaginas = Math.ceil(total / limit);
+
+    return successResponse(res, 200, "Productos obtenidos correctamente", {
+      page,
+      totalPaginas,
+      totalProductos: total,
+      hasNextPage: page < totalPaginas,
+      productos,
+    });
+
+  } catch (error) {
+    console.error("Error al obtener productos:", error);
+    return errorResponse(res, 500, "Error interno del servidor al obtener productos", "INTERNAL_ERROR");
+  }
 });
+
+
+
+
+
+
 
 // b.Obtener un producto por su id
 router.get('/leerproducto/:id', async (req, res) => {
@@ -81,13 +112,13 @@ router.get('/leerproducto/:id', async (req, res) => {
         });
 
         if (!producto) {
-            return res.status(404).json({ error: "Producto no encontrado."});
+            return errorResponse(res, 404, "Producto no encontrado", "PRODUCT_NOT_FOUND");
         }
 
-        res.status(200).json(producto);
+        return successResponse(res, 200, "Producto obtenido correctamente", producto);
     } catch (error) {
         console.error("Error al obtener el producto por ID:", error);
-        res.status(500).json({ error: "Error interno del servidor." });
+        return errorResponse(res, 500, "Error interno del servidor al obtener producto", "INTERNAL_ERROR");
     }
 });
 
@@ -114,16 +145,13 @@ router.put('/actualizarproducto/:id', async (req, res) => {
                 fecha_agregado: fecha_agregado ? new Date(fecha_agregado) : undefined
             },
         });
-        res.status(200).json({
-            message: "Producto actualizado correctamente.",
-            producto: productoActualizado
-        });
+        return successResponse(res, 200, "Producto actualizado correctamente", productoActualizado);
     } catch (error) {
         if (error.code === 'P2025') {
-            return res.status(400).json({ error: "Producto no encontrado." });
+            return errorResponse(res, 404, "Producto no encontrado", "PRODUCT_NOT_FOUND");
         }
         console.error("Error al actualizar el producto:", error);
-        res.status(500).json({ error: "Error interno del servidor." });
+        return errorResponse(res, 500, "Error interno del servidor al actualizar producto", "INTERNAL_ERROR");
     }
 });
 
@@ -140,14 +168,13 @@ router.delete('/eliminarProducto/:id', async ( req, res) => {
                 id_producto: productoId
             },
         });
-        res.status(200).json({
-            message: `Producto con ID ${productoId} eliminado correctamente.`
-        });
+        return successResponse(res, 200, `Producto con ID ${productoId} eliminado correctamente`, null);
     } catch (error) {
+        if (error.code === 'P2025') {
+            return errorResponse(res, 404, "Producto no encontrado", "PRODUCT_NOT_FOUND");
+        }
         console.error("Error al eliminar el producto:", error);
-        res.status(500).json({ 
-            error: "Error interno del servidor al eliminar el producto." 
-        });
+        return errorResponse(res, 500, "Error interno del servidor al eliminar producto", "INTERNAL_ERROR");
     }
 });
 

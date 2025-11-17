@@ -2,6 +2,7 @@ const express = require("express");
 const {controllerCancelarPedido, controllerEditarEstadoPedido} = require("../Controllers/pedido.controller.js");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
+const { successResponse, errorResponse } = require('../utils/responseHelper');
 
 const prisma = new PrismaClient();
 
@@ -28,11 +29,7 @@ router.post("/crearpedido", async (req, res) => {
       try {
         productos = JSON.parse(productos);
       } catch (e) {
-        return res.status(400).send({
-          ...response,
-          success: false,
-          message: "El formato de productos es inválido"
-        });
+        return errorResponse(res, 400, "El formato de productos es inválido", "INVALID_FORMAT");
       }
     }
 
@@ -44,9 +41,7 @@ router.post("/crearpedido", async (req, res) => {
       !direccion ||
       !total
     ) {
-      return res
-        .status(401)
-        .send({ ...response, message: "todos los campos son obligatorios" });
+      return errorResponse(res, 400, "Todos los campos son obligatorios", "MISSING_FIELDS");
     }
 
     const agregarNuevoPedido = await prisma.pedidos.create({
@@ -69,16 +64,13 @@ router.post("/crearpedido", async (req, res) => {
       });
     }
 
-    res
-      .status(200)
-      .send({
-      ...response,
-      message: "agrecados correctamente",
-      data: productos,
+    return successResponse(res, 201, "Pedido creado correctamente", {
+      pedido: agregarNuevoPedido,
+      productos: productos
     });
   } catch (error) {
     console.error("Error al crear pedido:", error);
-    res.status(500).json({ error: "Error interno del servidor." });
+    return errorResponse(res, 500, "Error interno del servidor al crear pedido", "INTERNAL_ERROR");
   }
 });
 
