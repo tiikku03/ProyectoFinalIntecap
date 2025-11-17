@@ -28,7 +28,7 @@ router.post("/crearusuario", async (req, res) => {
     const hashedPassword = await bcrypt.hash(contraseña, 10);
 
     // creando el  nuevo usuario
-    await prisma.usuarios.create({
+    const nuevoUsuario = await prisma.usuarios.create({
       data: {
         nombre: nombre,
         apellido: apellido,
@@ -36,6 +36,12 @@ router.post("/crearusuario", async (req, res) => {
         contrase_a: hashedPassword,
       },
     });
+
+    await prisma.carrito.create({
+      data: {
+        id_usuario: nuevoUsuario.id_usuario
+      }
+    })
 
     res.send("Usuario creado correctamente");
   } catch (error) {

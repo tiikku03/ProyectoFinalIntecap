@@ -1,4 +1,5 @@
 const express = require("express");
+const {controllerCancelarPedido, controllerEditarEstadoPedido} = require("../Controllers/pedido.controller.js");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
 
@@ -82,12 +83,9 @@ router.post("/crearpedido", async (req, res) => {
 });
 
 
-router.delete("/canclarpedido", (req, res) => {
-  
-});
+router.delete("/cancelarpedido", controllerCancelarPedido);
 
-
-
+router.put("/editarestadopedido", controllerEditarEstadoPedido);
 
 module.exports = router;
 

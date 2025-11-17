@@ -5,7 +5,9 @@ import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
-
+  fetch(`${import.meta.env.VITE_BACKEND_URL}/productos`)
+    .then((res) => res.json())
+    .then((data) => console.log(data));
   return (
     <>
       <div>

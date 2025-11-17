@@ -149,5 +149,6 @@ router.delete('/eliminarProducto/:id', async ( req, res) => {
             error: "Error interno del servidor al eliminar el producto." 
         });
     }
-})
+});
+
 module.exports = router;
