@@ -160,4 +160,6 @@ module.exports = {
     actualizarCantidadProducto,
     eliminarProductoDelCarrito,
     vaciarCarrito
+
+    
 };
