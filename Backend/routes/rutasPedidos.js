@@ -79,6 +79,72 @@ router.delete("/cancelarpedido", controllerCancelarPedido);
 
 router.put("/editarestadopedido", controllerEditarEstadoPedido);
 
+// ===================================================================
+// LEER PEDIDOS CON PAGINACIÓN
+// ===================================================================
+
+router.get("/leerpedidos", async (req, res) => {
+  try {
+    let page = parseInt(req.query.page, 10);
+
+    if (isNaN(page) || page < 1) {
+      page = 1;
+    }
+
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    const [pedidos, total] = await Promise.all([
+      prisma.pedidos.findMany({
+        skip,
+        take: limit,
+        orderBy: { fecha_pedido: "desc" },
+        include: {
+          usuarios: {
+            select: {
+              nombre: true,
+              apellido: true,
+              email: true
+            }
+          }
+        }
+      }),
+      prisma.pedidos.count()
+    ]);
+
+    const totalPaginas = Math.ceil(total / limit);
+
+    return successResponse(res, 200, "Pedidos obtenidos correctamente", {
+      page,
+      totalPaginas,
+      totalPedidos: total,
+      hasNextPage: page < totalPaginas,
+      pedidos
+    });
+
+  } catch (error) {
+    console.error("Error al obtener pedidos:", error);
+    return errorResponse(res, 500, "Error interno del servidor al obtener pedidos", "INTERNAL_ERROR");
+  }
+});
+
+// ===================================================================
+// OBTENER TOTAL DE PEDIDOS
+// ===================================================================
+
+router.get("/total", async (req, res) => {
+  try {
+    const totalPedidos = await prisma.pedidos.count();
+    
+    return successResponse(res, 200, "Total de pedidos obtenido correctamente", {
+      total: totalPedidos
+    });
+  } catch (error) {
+    console.error("Error al obtener total de pedidos:", error);
+    return errorResponse(res, 500, "Error interno del servidor", "INTERNAL_ERROR");
+  }
+});
+
 module.exports = router;
 
 
