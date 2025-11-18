@@ -29,6 +29,7 @@ app.use('/pedidos', rutasPedidos)
 
 app.use('/wishlist', rutasWishlist); 
 
+app.use('/carrito', require('./routes/rutasCarrito.js'));
 // para usar las rutas de productos.js
 app.use('/productos', rutasProductos);
 

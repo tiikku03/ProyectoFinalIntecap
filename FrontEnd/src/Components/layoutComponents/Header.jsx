@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { FiMenu, FiHeart, FiShoppingCart, FiUser } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../Context/LogInContext.jsx";
 import Sidebar from "../CostumerComponents/Sidebar";
 import UserModal from "../CostumerComponents/UserModal";
 
 function Header(){
+    const { isAuthenticated } = useAuth();
     const [wishlistCount] = useState(5); // Contador de wishlist
     const [cartCount] = useState(3); // Contador de carrito
     const [menuOpen, setMenuOpen] = useState(false); // Estado del menú lateral
@@ -58,8 +60,8 @@ function Header(){
                 </div>
             </header>
 
-            {/* Sidebar Component */}
-            <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+            {/* Sidebar Component - Solo si está autenticado */}
+            {isAuthenticated && <Sidebar menuOpen={menuOpen} setMenuOpen={setMenuOpen} />}
             
             {/* User Modal Component */}
             <UserModal userModalOpen={userModalOpen} setUserModalOpen={setUserModalOpen} />

@@ -19,7 +19,7 @@ function Sidebar({ menuOpen, setMenuOpen }) {
             {/* Overlay oscuro */}
             {menuOpen && (
                 <div 
-                    className="fixed inset-0 bg-black bg-opacity-50 z-40 transition-opacity"
+                    className="fixed inset-0 bg-black/50 z-40"
                     onClick={() => setMenuOpen(false)}
                 />
             )}

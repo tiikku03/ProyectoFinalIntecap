@@ -1,16 +1,56 @@
 import React, { useState } from "react";
 import { FiArrowLeft, FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../Context/LogInContext.jsx";
 
 function LogIn(){
     const navigate = useNavigate();
+    const { login, isAdmin } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
-        email: "",
-        password: "",
+        correo: "",
+        contraseña: "",
         remember: false
     });
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const [loading, setLoading] = useState(false);
 
+    const iniciarSesion = async() => {
+        setLoading(true);
+        try {
+            const response = await fetch(`${apiUrl}/usuarios/autorizarusuario`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    correo: formData.correo,
+                    contraseña: formData.contraseña
+                })
+            });
+            const data = await response.json();
+            
+            if(data.success) {
+                console.log("Usuario autenticado:", data.data);
+                // Guardar datos del usuario usando el contexto
+                login(data.data);
+                
+                // Redirigir según el rol del usuario recién autenticado
+                if(data.data.rol === 'admin') {
+                    navigate('/admin/dashboard');
+                } else {
+                    navigate('/home');
+                }
+            } else {
+                alert(data.message || "Error al iniciar sesión");
+            }
+        } catch (error) {
+            console.error("Error al iniciar sesión:", error);
+            alert("Error de conexión con el servidor");
+        } finally {
+            setLoading(false);
+        }
+    };
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData(prev => ({
@@ -21,8 +61,7 @@ function LogIn(){
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Aquí irá la lógica de autenticación
-        console.log("Login data:", formData);
+        iniciarSesion();
     };
 
     return(
@@ -54,9 +93,9 @@ function LogIn(){
                             <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                             <input
                                 type="email"
-                                id="email"
-                                name="email"
-                                value={formData.email}
+                                id="correo"
+                                name="correo"
+                                value={formData.correo}
                                 onChange={handleChange}
                                 placeholder="correo@ejemplo.com"
                                 required
@@ -74,9 +113,9 @@ function LogIn(){
                             <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                             <input
                                 type={showPassword ? "text" : "password"}
-                                id="password"
-                                name="password"
-                                value={formData.password}
+                                id="contraseña"
+                                name="contraseña"
+                                value={formData.contraseña}
                                 onChange={handleChange}
                                 placeholder="Tu contraseña"
                                 required
@@ -112,9 +151,10 @@ function LogIn(){
                     {/* Botón Iniciar Sesión */}
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors focus:ring-4 focus:ring-blue-300"
+                        disabled={loading}
+                        className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors focus:ring-4 focus:ring-blue-300 disabled:bg-blue-400 disabled:cursor-not-allowed"
                     >
-                        Iniciar Sesión
+                        {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
                     </button>
                 </form>
 

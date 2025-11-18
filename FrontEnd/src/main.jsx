@@ -5,6 +5,9 @@ import './index.css'
 import App from './App.jsx'
 import LogIn from './pages/LogIn.jsx'
 import CrearUsuario from './pages/CrearUsuario.jsx'
+import { AuthProvider } from './Context/LogInContext.jsx'
+import { CarritoProvider } from './Context/CarritoContex.jsx'
+import ProtectedRoute from './Components/ProtectedRoute.jsx'
 /*========================= RUTAS DEL CLIENTE ==========================*/
 import CostumerLayout from './layouts/CostumerLayout.jsx'
 import Home from './pages/Costumer/Home.jsx'
@@ -14,13 +17,18 @@ import Producto from './pages/Costumer/Producto.jsx'
 /*========================= RUTAS DEL USUARIO ==========================*/
 import AdminLayout from './layouts/AdminLayout.jsx'
 import Dashboard from './pages/Admin/Dashboard.jsx'
+import GestionProductos from './pages/Admin/GestionProductos.jsx'
+import GestionPedidos from './pages/Admin/GestionPedidos.jsx'
+import GestionUsuarios from './pages/Admin/GestionUsuarios.jsx'
 
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-    {/* Rutas del Cliente */}
-      <Routes>
+      <AuthProvider>
+        <CarritoProvider>
+          {/* Rutas del Cliente */}
+          <Routes>
         <Route path="/" element={<CostumerLayout />} >
           <Route index element={<Home />} />
           <Route path='home' element={<Home />} />
@@ -35,11 +43,20 @@ createRoot(document.getElementById('root')).render(
 
 
         {/* Rutas del Admin */}
-        <Route path='admin' element={<AdminLayout />}>
+        <Route path="admin" element={
+          <ProtectedRoute requireAdmin={true}>
+            <AdminLayout />
+          </ProtectedRoute>
+        }>
           <Route index element={<Dashboard />} />
-          <Route path='dashboard' element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="productos" element={<GestionProductos />} />
+          <Route path="pedidos" element={<GestionPedidos />} />
+          <Route path="usuarios" element={<GestionUsuarios />} />
         </Route>
-      </Routes>
+        </Routes>
+        </CarritoProvider>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>,
 )
