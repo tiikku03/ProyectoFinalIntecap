@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { successResponse, errorResponse } = require('../utils/responseHelper');
+const { obtenerUsuarios } = require('../Controllers/usuarios.controller');
 
 router.use(express.json());
 
@@ -35,6 +36,7 @@ router.post("/crearusuario", async (req, res) => {
         apellido: apellido,
         email: correo,
         contrase_a: hashedPassword,
+        rol: "usuario",
       },
     });
 
@@ -48,7 +50,8 @@ router.post("/crearusuario", async (req, res) => {
       id_usuario: nuevoUsuario.id_usuario,
       nombre: nuevoUsuario.nombre,
       apellido: nuevoUsuario.apellido,
-      correo: nuevoUsuario.email
+      correo: nuevoUsuario.email,
+      rol: nuevoUsuario.rol
     });
   } catch (error) {
     console.error("Error al crear usuario:", error);
@@ -86,10 +89,55 @@ router.post("/autorizarusuario", async (req, res) => {
       nombre: usuario.nombre,
       apellido: usuario.apellido,
       correo: usuario.email,
+      rol: usuario.rol
     });
   } catch (error) {
     console.error("Error al autorizar usuario:", error);
     return errorResponse(res, 500, "Error interno del servidor al autorizar el usuario", "INTERNAL_ERROR");
+  }
+});
+
+// ===================================================================
+// OBTENER TOTAL DE USUARIOS
+// ===================================================================
+
+router.get("/total", async (req, res) => {
+  try {
+    const totalUsuarios = await prisma.usuarios.count();
+    
+    return successResponse(res, 200, "Total de usuarios obtenido correctamente", {
+      total: totalUsuarios
+    });
+  } catch (error) {
+    console.error("Error al obtener total de usuarios:", error);
+    return errorResponse(res, 500, "Error interno del servidor", "INTERNAL_ERROR");
+  }
+});
+
+// ===================================================================
+// OBTENER ESTADÍSTICAS DE USUARIOS
+// ===================================================================
+
+router.get("/estadisticas", async (req, res) => {
+  try {
+    const [total, clientes, admins] = await Promise.all([
+      prisma.usuarios.count(),
+      prisma.usuarios.count({
+        where: { rol: 'cliente' }
+      }),
+      prisma.usuarios.count({
+        where: { rol: 'admin' }
+      })
+    ]);
+
+    return successResponse(res, 200, "Estadísticas obtenidas correctamente", {
+      total: total,
+      admins: admins,
+      clientes: clientes
+    });
+  } catch (error) {
+    console.error("Error al obtener estadísticas:", error);
+    return errorResponse(res, 500, "Error interno del servidor", "INTERNAL_ERROR");
   }
 });
 
@@ -151,5 +199,10 @@ router.delete("/eliminarusuario/:id", async (req, res) => {
     return errorResponse(res, 500, "Error interno del servidor al eliminar el usuario", "INTERNAL_ERROR");
   }
 });
+
+// ===================================================================
+// OBTENER TODOS LOS USUARIOS
+// ===================================================================
+router.get('/', obtenerUsuarios);
 
 module.exports = router;
