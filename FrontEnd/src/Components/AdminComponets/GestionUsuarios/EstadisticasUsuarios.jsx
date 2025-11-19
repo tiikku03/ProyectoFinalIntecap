@@ -9,7 +9,7 @@ const EstadisticasUsuarios = ({ estadisticas, loading }) => {
     },
     {
       titulo: 'Usuarios',
-      valor: estadisticas.clientes || 0,
+      valor: estadisticas.usuarios || 0,
       color: 'text-blue-600'
     }
   ];

@@ -120,10 +120,10 @@ router.get("/total", async (req, res) => {
 
 router.get("/estadisticas", async (req, res) => {
   try {
-    const [total, clientes, admins] = await Promise.all([
+    const [total, usuarios, admins] = await Promise.all([
       prisma.usuarios.count(),
       prisma.usuarios.count({
-        where: { rol: 'cliente' }
+        where: { rol: 'usuario' }
       }),
       prisma.usuarios.count({
         where: { rol: 'admin' }
@@ -133,7 +133,7 @@ router.get("/estadisticas", async (req, res) => {
     return successResponse(res, 200, "Estadísticas obtenidas correctamente", {
       total: total,
       admins: admins,
-      clientes: clientes
+      usuarios: usuarios
     });
   } catch (error) {
     console.error("Error al obtener estadísticas:", error);
