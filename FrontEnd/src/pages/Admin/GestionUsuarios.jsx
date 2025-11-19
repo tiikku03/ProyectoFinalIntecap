@@ -6,8 +6,8 @@ import TablaUsuarios from '../../Components/AdminComponets/GestionUsuarios/Tabla
 function GestionUsuarios() {
   const [estadisticas, setEstadisticas] = useState({
     total: 0,
-    admins: 0,
-    clientes: 0
+    clientes: 0,
+    admins: 0
   });
   const [loading, setLoading] = useState(true);
   const [busqueda, setBusqueda] = useState('');
@@ -17,6 +17,7 @@ function GestionUsuarios() {
     fetchEstadisticas();
   }, []);
 
+  
   const fetchEstadisticas = async () => {
     try {
       setLoading(true);

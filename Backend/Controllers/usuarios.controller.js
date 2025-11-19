@@ -11,7 +11,6 @@ async function obtenerUsuarios(req, res) {
         nombre: true,
         apellido: true,
         email: true,
-        telefono: true,
         fecha_registro: true,
         rol: true
       },
