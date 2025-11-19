@@ -123,7 +123,7 @@ router.get("/estadisticas", async (req, res) => {
     const [total, clientes, admins] = await Promise.all([
       prisma.usuarios.count(),
       prisma.usuarios.count({
-        where: { rol: 'cliente' }
+        where: { rol: 'usuario' }
       }),
       prisma.usuarios.count({
         where: { rol: 'admin' }
