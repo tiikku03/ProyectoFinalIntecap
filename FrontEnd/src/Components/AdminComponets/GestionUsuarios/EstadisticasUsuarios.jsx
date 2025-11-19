@@ -3,17 +3,12 @@ import React from 'react';
 const EstadisticasUsuarios = ({ estadisticas, loading }) => {
   const tarjetas = [
     {
-      titulo: 'Total',
-      valor: estadisticas.total || 0,
-      color: 'text-gray-800'
-    },
-    {
       titulo: 'Admins',
       valor: estadisticas.admins || 0,
       color: 'text-purple-600'
     },
     {
-      titulo: 'Clientes',
+      titulo: 'Usuarios',
       valor: estadisticas.clientes || 0,
       color: 'text-blue-600'
     }
