@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import TablasPedidos from '../../Components/AdminComponets/GestionPedidos/TablasPedidos';
 import FiltrosPedidos from '../../Components/AdminComponets/GestionPedidos/FiltrosPedidos';
 import EstadisticasEstadoPedidos from '../../Components/AdminComponets/GestionPedidos/EstadisticasEstadoPedidos';
+import ModalDetallePedido from '../../Components/AdminComponets/GestionPedidos/ModalDetallePedido';
 
 function GestionPedidos() {
     const [pedidos, setPedidos] = useState([]);
@@ -118,30 +119,12 @@ function GestionPedidos() {
                 </div>
             )}
 
-            {/* Modal Detalle (Placeholder) */}
-            {modalDetalle && pedidoSeleccionado && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg p-4 sm:p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg sm:text-xl font-bold">Detalle del Pedido #{pedidoSeleccionado.id_pedido}</h2>
-                            <button
-                                onClick={() => setModalDetalle(false)}
-                                className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
-                            >
-                                ✕
-                            </button>
-                        </div>
-                        <div className="space-y-3 sm:space-y-4 text-sm sm:text-base">
-                            <p><strong>Usuario:</strong> #{pedidoSeleccionado.id_usuario}</p>
-                            <p><strong>Total:</strong> ${parseFloat(pedidoSeleccionado.total).toFixed(2)}</p>
-                            <p><strong>Estado:</strong> {pedidoSeleccionado.estado}</p>
-                            <p><strong>Método de Pago:</strong> {pedidoSeleccionado.metodo_pago}</p>
-                            <p className="wrap-break-word"><strong>Dirección:</strong> {pedidoSeleccionado.direccion_envio}</p>
-                            {/* TODO: Agregar detalles de productos del pedido */}
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* Modal Detalle del Pedido */}
+            <ModalDetallePedido
+                isOpen={modalDetalle}
+                onClose={() => setModalDetalle(false)}
+                pedidoId={pedidoSeleccionado?.id_pedido}
+            />
         </div>
     );
 }
