@@ -59,13 +59,6 @@ function GestionUsuarios() {
 
       {/* Tabla de Usuarios */}
       <TablaUsuarios busqueda={busqueda} rolFiltro={rolFiltro} />
-
-      {/* Aquí irá la tabla de usuarios */}
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <p className="text-gray-500 text-center py-8">
-          Tabla de usuarios en desarrollo...
-        </p>
-      </div>
     </div>
   );
 }

@@ -20,6 +20,7 @@ import Dashboard from './pages/Admin/Dashboard.jsx'
 import GestionProductos from './pages/Admin/GestionProductos.jsx'
 import GestionPedidos from './pages/Admin/GestionPedidos.jsx'
 import GestionUsuarios from './pages/Admin/GestionUsuarios.jsx'
+import GestionResenas from './pages/Admin/GestionReseñas.jsx'
 
 
 createRoot(document.getElementById('root')).render(
@@ -53,6 +54,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="productos" element={<GestionProductos />} />
           <Route path="pedidos" element={<GestionPedidos />} />
           <Route path="usuarios" element={<GestionUsuarios />} />
+          <Route path="resenas" element={<GestionResenas />} />
         </Route>
         </Routes>
         </CarritoProvider>

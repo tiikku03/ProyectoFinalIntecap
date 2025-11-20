@@ -74,78 +74,133 @@ const TablasPedidos = ({ pedidos, loading, loadingMore, onLoadMore, onVerDetalle
 
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                ID
-              </th>
-              <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Cliente
-              </th>
-              <th className="hidden md:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Fecha
-              </th>
-              <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Total
-              </th>
-              <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Estado
-              </th>
-              <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {pedidos.length === 0 ? (
-              <tr>
-                <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
-                  No se encontraron pedidos
-                </td>
-              </tr>
-            ) : (
-              pedidos.map((pedido) => (
-                <tr key={pedido.id_pedido} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-medium text-gray-900">
-                    <span className="hidden sm:inline">ORD-</span>{String(pedido.id_pedido).padStart(4, '0')}
-                  </td>
-                  <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4">
-                    <div className="text-xs sm:text-sm font-medium text-gray-900 truncate max-w-[120px] sm:max-w-none">
+      {pedidos.length === 0 ? (
+        <div className="px-6 py-12 text-center text-gray-500">
+          No se encontraron pedidos
+        </div>
+      ) : (
+        <>
+          {/* Vista móvil - Tarjetas */}
+          <div className="block lg:hidden">
+            <div className="divide-y divide-gray-200">
+              {pedidos.map((pedido) => (
+                <div key={pedido.id_pedido} className="p-4 hover:bg-gray-50 transition-colors">
+                  {/* ID y Estado */}
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">
+                        ORD-{String(pedido.id_pedido).padStart(4, '0')}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {formatearFecha(pedido.fecha_pedido)}
+                      </div>
+                    </div>
+                    <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getEstadoColor(pedido.estado)}`}>
+                      <span className="mr-1">{getEstadoEmoji(pedido.estado)}</span>
+                      {pedido.estado}
+                    </span>
+                  </div>
+
+                  {/* Cliente */}
+                  <div className="mb-2">
+                    <div className="text-sm text-gray-800 font-medium">
                       {pedido.usuario?.nombre} {pedido.usuario?.apellido}
                     </div>
-                    <div className="text-xs text-gray-500 truncate max-w-[120px] sm:max-w-none hidden sm:block">
+                    <div className="text-xs text-gray-500">
                       {pedido.usuario?.email}
                     </div>
-                  </td>
-                  <td className="hidden md:table-cell px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {formatearFecha(pedido.fecha_pedido)}
-                  </td>
-                  <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm font-semibold text-gray-900">
-                    {formatearPrecio(pedido.total)}
-                  </td>
-                  <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
-                    <span className={`inline-flex items-center px-1.5 sm:px-2.5 py-0.5 rounded-full text-xs font-medium ${getEstadoColor(pedido.estado)}`}>
-                      <span className="mr-0.5 sm:mr-1">{getEstadoEmoji(pedido.estado)}</span>
-                      <span className="hidden sm:inline">{pedido.estado}</span>
-                    </span>
-                  </td>
-                  <td className="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm">
+                  </div>
+
+                  {/* Total */}
+                  <div className="mb-3">
+                    <div className="text-xs text-gray-500 mb-1">Total</div>
+                    <div className="text-sm font-semibold text-gray-900">
+                      {formatearPrecio(pedido.total)}
+                    </div>
+                  </div>
+
+                  {/* Acción */}
+                  <div>
                     <button
                       onClick={() => onVerDetalle(pedido)}
-                      className="inline-flex items-center px-2 sm:px-3 py-1 sm:py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                      className="w-full py-2 rounded bg-blue-50 hover:bg-blue-100 text-blue-600 flex items-center justify-center gap-2"
                     >
-                      <FaEye className="sm:mr-1" />
-                      <span className="hidden sm:inline ml-1">Ver Detalle</span>
+                      <FaEye className="w-4 h-4" />
+                      <span className="text-sm">Ver Detalle</span>
                     </button>
-                  </td>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Vista desktop - Tabla */}
+          <div className="hidden lg:block overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    ID
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Cliente
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Fecha
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Total
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Estado
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Acciones
+                  </th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {pedidos.map((pedido) => (
+                  <tr key={pedido.id_pedido} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      ORD-{String(pedido.id_pedido).padStart(4, '0')}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm font-medium text-gray-900">
+                        {pedido.usuario?.nombre} {pedido.usuario?.apellido}
+                      </div>
+                      <div className="text-xs text-gray-500">
+                        {pedido.usuario?.email}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {formatearFecha(pedido.fecha_pedido)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                      {formatearPrecio(pedido.total)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getEstadoColor(pedido.estado)}`}>
+                        <span className="mr-1">{getEstadoEmoji(pedido.estado)}</span>
+                        {pedido.estado}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <button
+                        onClick={() => onVerDetalle(pedido)}
+                        className="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                      >
+                        <FaEye className="mr-1" />
+                        Ver Detalle
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
 
       {/* Observer target for infinite scroll */}
       <div ref={observerTarget} className="h-4" />
