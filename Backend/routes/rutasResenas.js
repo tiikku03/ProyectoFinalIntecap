@@ -77,10 +77,32 @@ router.post('/crearresena', async (req, res) => {
 // --- 2. READ (Leer/Obtener reseñas) ---
 // ===================================================================
 
-// a. Obtener todas las reseñas
+// a. Obtener todas las reseñas con información de usuario y producto
 router.get('/leerresena', async (req, res) => {
     try {
-        const resenas = await prisma.resenas.findMany();
+        const resenas = await prisma.resenas.findMany({
+            include: {
+                usuarios: {
+                    select: {
+                        id_usuario: true,
+                        nombre: true,
+                        apellido: true,
+                        email: true
+                    }
+                },
+                productos: {
+                    select: {
+                        id_producto: true,
+                        nombre: true,
+                        url_imagen: true,
+                        precio: true
+                    }
+                }
+            },
+            orderBy: {
+                fecha_resena: 'desc'
+            }
+        });
         return successResponse(res, 200, "Reseñas obtenidas correctamente", resenas);
     } catch (error) {
         console.error("Error al obtener todas las reseñas:", error);
