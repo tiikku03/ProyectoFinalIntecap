@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { FiArrowLeft, FiUser, FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../Context/LogInContext.jsx";
 
 function CrearUsuario(){
     const navigate = useNavigate();
+    const { login } = useAuth();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         nombre: "",
         apellido: "",
@@ -14,6 +17,7 @@ function CrearUsuario(){
         confirmPassword: ""
     });
     const [errors, setErrors] = useState({});
+    const apiUrl = import.meta.env.VITE_API_URL;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -21,7 +25,6 @@ function CrearUsuario(){
             ...prev,
             [name]: value
         }));
-        // Limpiar error del campo cuando el usuario empieza a escribir
         if (errors[name]) {
             setErrors(prev => ({
                 ...prev,
@@ -63,12 +66,47 @@ function CrearUsuario(){
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (validateForm()) {
-            // Aquí irá la lógica de registro
-            console.log("Register data:", formData);
+            setLoading(true);
+            try {
+                const response = await fetch(`${apiUrl}/usuarios/crearusuario`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        nombre: formData.nombre,
+                        apellido: formData.apellido,
+                        correo: formData.email,
+                        contraseña: formData.password
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    console.log("Usuario creado exitosamente:", data.data);
+                    login(data.data);
+                    navigate('/home');
+                } else {
+                    if (data.code === "EMAIL_EXISTS") {
+                        setErrors(prev => ({
+                            ...prev,
+                            email: "Este correo ya está registrado"
+                        }));
+                    } else {
+                        alert(data.message || "Error al crear la cuenta");
+                    }
+                }
+            } catch (error) {
+                console.error("Error al crear usuario:", error);
+                alert("Error de conexión con el servidor");
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -179,7 +217,6 @@ function CrearUsuario(){
                         {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
                     </div>
 
-                    {/* Campo Confirmar Contraseña */}
                     <div>
                         <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
                             Confirmar Contraseña *
@@ -206,12 +243,12 @@ function CrearUsuario(){
                         {errors.confirmPassword && <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>}
                     </div>
 
-                    {/* Botón Crear Cuenta */}
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors focus:ring-4 focus:ring-blue-300"
+                        disabled={loading}
+                        className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors focus:ring-4 focus:ring-blue-300 disabled:bg-blue-400 disabled:cursor-not-allowed"
                     >
-                        Crear Cuenta
+                        {loading ? "Creando cuenta..." : "Crear Cuenta"}
                     </button>
                 </form>
 

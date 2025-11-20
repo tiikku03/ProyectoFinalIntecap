@@ -4,14 +4,13 @@ import { Link } from "react-router-dom";
 
 function Sidebar({ menuOpen, setMenuOpen }) {
     const categorias = [
-        "Electrónica",
-        "Ropa y Moda",
-        "Hogar y Jardín",
+        "Accesorios",
+        "Alimentos",
+        "Celulares",
         "Deportes",
-        "Libros",
-        "Juguetes",
-        "Belleza",
-        "Alimentos"
+        "Farmacia",
+        "Ropa",
+        "Tecnologia"
     ];
 
     return (

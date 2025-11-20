@@ -2,6 +2,32 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+async function totalCarrito(idCarrito){
+    try {
+        const carrito = await prisma.detalle_carrito.findMany({
+            where: { CarritoID: parseInt(idCarrito)},
+            include: {
+                productos: true
+            }
+        })
+
+        if (!carrito || carrito.length === 0) {
+            return 0;
+        }
+
+        let total = 0;
+        carrito.forEach(item =>{
+            total += parseFloat(item.productos.precio) * item.Cantidad;
+        })
+
+        return parseFloat(total.toFixed(2));
+    }
+    catch(error){
+        throw new Error('Error al calcular total del carrito: ' + error.message);
+    }
+}
+
+
 // Obtener carrito por ID de usuario
 async function obtenerCarritoPorUsuario(idUsuario) {
     try {
@@ -86,7 +112,7 @@ async function agregarProductoAlCarrito(data) {
                     productos: true
                 }
             });
-            return nuevoItem;
+            return {...nuevoItem, total: await totalCarrito(idCarrito)};
         }
     } catch (error) {
         throw new Error('Error al agregar producto al carrito: ' + error.message);
@@ -155,11 +181,10 @@ async function vaciarCarrito(idCarrito) {
 }
 
 module.exports = {
+    totalCarrito,
     obtenerCarritoPorUsuario,
     agregarProductoAlCarrito,
     actualizarCantidadProducto,
     eliminarProductoDelCarrito,
     vaciarCarrito
-
-    
 };

@@ -13,13 +13,16 @@ import CostumerLayout from './layouts/CostumerLayout.jsx'
 import Home from './pages/Costumer/Home.jsx'
 import Carrito from './pages/Costumer/Carrito.jsx'
 import Producto from './pages/Costumer/Producto.jsx'
-/* import Categoria from './pages/Costumer/Categoria.jsx' */
+import Categoria from './pages/Costumer/Categoria.jsx'
+
+
 /*========================= RUTAS DEL USUARIO ==========================*/
 import AdminLayout from './layouts/AdminLayout.jsx'
 import Dashboard from './pages/Admin/Dashboard.jsx'
 import GestionProductos from './pages/Admin/GestionProductos.jsx'
 import GestionPedidos from './pages/Admin/GestionPedidos.jsx'
 import GestionUsuarios from './pages/Admin/GestionUsuarios.jsx'
+import GestionResenas from './pages/Admin/GestionReseñas.jsx'
 
 
 createRoot(document.getElementById('root')).render(
@@ -34,7 +37,7 @@ createRoot(document.getElementById('root')).render(
           <Route path='home' element={<Home />} />
           <Route path='carrito' element={<Carrito />} />
           <Route path='producto/:id' element={<Producto />} />
-         {/*  <Route path='categoria/:id' element={<Categoria />}></Route> */}
+          <Route path='categoria/:categoria' element={<Categoria />}></Route>
         </Route>
         
         {/* Rutas de autenticación */}
@@ -53,6 +56,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="productos" element={<GestionProductos />} />
           <Route path="pedidos" element={<GestionPedidos />} />
           <Route path="usuarios" element={<GestionUsuarios />} />
+          <Route path="resenas" element={<GestionResenas />} />
         </Route>
         </Routes>
         </CarritoProvider>

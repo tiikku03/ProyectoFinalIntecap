@@ -1,6 +1,3 @@
-/**
- * Helper para estandarizar las respuestas de la API
- */
 
 const successResponse = (res, statusCode = 200, message, data = null) => {
   const response = {

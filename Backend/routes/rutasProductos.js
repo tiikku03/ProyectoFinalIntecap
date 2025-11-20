@@ -3,6 +3,7 @@ const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { successResponse, errorResponse } = require('../utils/responseHelper');
+const { obtnerProductosPorCategoria } = require('../Controllers/productos.controller');
 
 // Middleware para que el router pueda leer JSON
 router.use(express.json());
@@ -177,5 +178,11 @@ router.delete('/eliminarProducto/:id', async ( req, res) => {
         return errorResponse(res, 500, "Error interno del servidor al eliminar producto", "INTERNAL_ERROR");
     }
 });
+
+
+// ===================================================================
+// -- PRODUCTOS POR CATEGORIA ---
+// ===================================================================
+router.get('/productosPorCategoria', obtnerProductosPorCategoria);
 
 module.exports = router;
