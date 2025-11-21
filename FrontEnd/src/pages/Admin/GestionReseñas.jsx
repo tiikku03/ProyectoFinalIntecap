@@ -5,13 +5,12 @@ import FiltrosResenas from '../../Components/AdminComponets/GestionReseñas/Filt
 import TablaResenas from '../../Components/AdminComponets/GestionReseñas/TablaResenas';
 
 function GestionResenas() {
-    // Estados para filtros
     const [busqueda, setBusqueda] = useState("");
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("");
     const [calificacionSeleccionada, setCalificacionSeleccionada] = useState("");
     const [categorias, setCategorias] = useState([]);
 
-    // Obtener categorías únicas desde la API de productos
+
     useEffect(() => {
         fetchCategorias();
     }, []);
@@ -20,7 +19,6 @@ function GestionResenas() {
         try {
             const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
-            // Obtener todas las páginas de productos
             let todasLasCategorias = [];
             let page = 1;
             let hasNextPage = true;
