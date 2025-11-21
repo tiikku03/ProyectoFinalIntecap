@@ -1,20 +1,8 @@
 import React, { useState } from "react";
-import { FiZoomIn, FiX } from "react-icons/fi";
 
 function ImagenProducto({ imagenes = [] }) {
     const [imagenActual, setImagenActual] = useState(0);
-    const [zoomActivo, setZoomActivo] = useState(false);
-    const [posicionMouse, setPosicionMouse] = useState({ x: 50, y: 50 });
     const [errorImagen, setErrorImagen] = useState(false);
-
-    const handleMouseMove = (e) => {
-        if (!zoomActivo) return;
-
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
-        setPosicionMouse({ x, y });
-    };
 
     // Si no hay imágenes o hay error, mostrar placeholder
     if (!imagenes || imagenes.length === 0 || errorImagen) {
@@ -37,28 +25,14 @@ function ImagenProducto({ imagenes = [] }) {
     return (
         <div className="w-full lg:w-1/2">
             {/* Imagen principal */}
-            <div className="relative bg-gray-100 rounded-lg overflow-hidden mb-4 group">
-                <div
-                    className="aspect-square relative cursor-zoom-in"
-                    onMouseMove={handleMouseMove}
-                    onMouseEnter={() => setZoomActivo(true)}
-                    onMouseLeave={() => setZoomActivo(false)}
-                >
+            <div className="relative bg-gray-100 rounded-lg overflow-hidden mb-4">
+                <div className="aspect-square relative">
                     <img
                         src={imagenes[imagenActual]}
                         alt={`Producto imagen ${imagenActual + 1}`}
-                        className="w-full h-full object-contain transition-transform duration-200"
-                        style={zoomActivo ? {
-                            transform: 'scale(2)',
-                            transformOrigin: `${posicionMouse.x}% ${posicionMouse.y}%`
-                        } : {}}
+                        className="w-full h-full object-contain"
                         onError={() => setErrorImagen(true)}
                     />
-
-                    {/* Icono de zoom */}
-                    <div className="absolute top-4 right-4 bg-white/90 p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                        <FiZoomIn className="w-5 h-5 text-gray-700" />
-                    </div>
                 </div>
             </div>
 
