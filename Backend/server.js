@@ -18,7 +18,8 @@ app.use(helmet());
 app.use(
   cors({
     origin: [
-      "proyectofinal-backend-production-f665.up.railway.app",
+      "https://proyectofinal-frontend-production.up.railway.app",
+      "https://proyectofinal-backend-production-f665.up.railway.app",
       "http://localhost:5173",
     ],
     credentials: true
