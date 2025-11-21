@@ -117,7 +117,7 @@ router.get('/leerresena/:id', async (req, res) => {
     try {
         const resena = await prisma.resenas.findUnique({
             where: {
-                id_resena: idResena 
+                id_resena: idResena
             },
         });
 
@@ -129,6 +129,36 @@ router.get('/leerresena/:id', async (req, res) => {
     } catch (error) {
         console.error("Error al obtener la reseña por ID:", error);
         return errorResponse(res, 500, "Error interno del servidor al obtener reseña", "INTERNAL_ERROR");
+    }
+});
+
+// c. Obtener reseñas por ID de producto
+router.get('/producto/:id', async (req, res) => {
+    const idProducto = parseInt(req.params.id);
+
+    try {
+        const resenas = await prisma.resenas.findMany({
+            where: {
+                id_producto: idProducto
+            },
+            include: {
+                usuarios: {
+                    select: {
+                        id_usuario: true,
+                        nombre: true,
+                        apellido: true
+                    }
+                }
+            },
+            orderBy: {
+                fecha_resena: 'desc'
+            }
+        });
+
+        return successResponse(res, 200, "Reseñas del producto obtenidas correctamente", resenas);
+    } catch (error) {
+        console.error("Error al obtener reseñas del producto:", error);
+        return errorResponse(res, 500, "Error interno del servidor al obtener reseñas", "INTERNAL_ERROR");
     }
 });
 

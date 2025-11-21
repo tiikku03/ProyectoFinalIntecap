@@ -36,11 +36,15 @@ function TablaProductos({ productos, loading, onEditar, onEliminar }) {
                             {/* Imagen, nombre y ID */}
                             <div className="flex items-start gap-3 mb-3">
                                 <div className="h-16 w-16 shrink-0 bg-gray-200 rounded-lg flex items-center justify-center">
-                                    {producto.imagen_url ? (
+                                    {(producto.url_imagen || producto.imagen_url) ? (
                                         <img
-                                            src={producto.imagen_url}
+                                            src={producto.url_imagen || producto.imagen_url}
                                             alt={producto.nombre}
                                             className="h-16 w-16 rounded-lg object-cover"
+                                            onError={(e) => {
+                                                e.target.style.display = 'none';
+                                                e.target.parentElement.innerHTML = '<svg class="text-gray-400 w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>';
+                                            }}
                                         />
                                     ) : (
                                         <FiPackage className="text-gray-400 w-6 h-6" />
@@ -147,11 +151,15 @@ function TablaProductos({ productos, loading, onEditar, onEliminar }) {
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
                                         <div className="h-10 w-10 shrink-0 bg-gray-200 rounded-lg flex items-center justify-center">
-                                            {producto.imagen_url ? (
+                                            {(producto.url_imagen || producto.imagen_url) ? (
                                                 <img
-                                                    src={producto.imagen_url}
+                                                    src={producto.url_imagen || producto.imagen_url}
                                                     alt={producto.nombre}
                                                     className="h-10 w-10 rounded-lg object-cover"
+                                                    onError={(e) => {
+                                                        e.target.style.display = 'none';
+                                                        e.target.parentElement.innerHTML = '<svg class="text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>';
+                                                    }}
                                                 />
                                             ) : (
                                                 <FiPackage className="text-gray-400" />
