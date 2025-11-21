@@ -1,16 +1,28 @@
 const carritoService = require('../Services/carrito.service');
 const { successResponse, errorResponse } = require('../utils/responseHelper');
 
-// Obtener carrito por ID de usuario
+// Crear carrito para un usuario
+async function crearCarrito(req, res) {
+    try {
+        const { idUsuario } = req.body;
+
+        if (!idUsuario) {
+            return errorResponse(res, 400, 'ID de usuario requerido');
+        }
+
+        const carrito = await carritoService.crearCarrito(idUsuario);
+        return successResponse(res, 201, 'Carrito creado exitosamente', carrito);
+    } catch (error) {
+        return errorResponse(res, 500, error.message);
+    }
+}
+
+// Obtener carrito por ID de usuario (crea uno automáticamente si no existe)
 async function obtenerCarritoPorUsuario(req, res) {
     try {
         const { idUsuario } = req.params;
         const carrito = await carritoService.obtenerCarritoPorUsuario(idUsuario);
-        
-        if (!carrito) {
-            return errorResponse(res, 404, 'Carrito no encontrado');
-        }
-        
+
         return successResponse(res, 200, 'Carrito obtenido exitosamente', carrito);
     } catch (error) {
         return errorResponse(res, 500, error.message);
@@ -93,6 +105,7 @@ async function vaciarCarrito(req, res) {
 }
 
 module.exports = {
+    crearCarrito,
     obtenerCarritoPorUsuario,
     agregarProductoAlCarrito,
     actualizarCantidadProducto,

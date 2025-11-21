@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import { FiMenu, FiHeart, FiShoppingCart, FiUser } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../Context/LogInContext.jsx";
+import { useCarrito } from "../../Context/CarritoContext.jsx";
 import Sidebar from "../CostumerComponents/Sidebar";
 import UserModal from "../CostumerComponents/UserModal";
 
 function Header(){
     const { isAuthenticated } = useAuth();
+    const { cantidadItems } = useCarrito();
     const [wishlistCount] = useState(5); // Contador de wishlist
-    const [cartCount] = useState(3); // Contador de carrito
     const [menuOpen, setMenuOpen] = useState(false); // Estado del menú lateral
     const [userModalOpen, setUserModalOpen] = useState(false); // Estado del modal de usuario
 
@@ -42,9 +43,9 @@ function Header(){
 
                             <Link to="/carrito" className="relative p-2 rounded-md hover:bg-gray-100 transition-colors">
                                 <FiShoppingCart className="w-5 h-5 text-gray-700" />
-                                {cartCount > 0 && (
+                                {cantidadItems > 0 && (
                                     <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                                        {cartCount}
+                                        {cantidadItems}
                                     </span>
                                 )}
                             </Link>

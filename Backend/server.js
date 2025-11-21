@@ -7,6 +7,7 @@ const rutasResenas = require("./routes/rutasResenas.js");
 const rutasWishlist = require("./routes/rutasWishlist.js");
 const rutasProductos = require("./routes/rutasProductos.js");
 const rutasPedidos = require("./routes/rutasPedidos.js");
+const rutasPagos = require("./routes/rutasPagos.js");
 const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
@@ -40,6 +41,8 @@ app.use("/wishlist", rutasWishlist);
 app.use("/carrito", require("./routes/rutasCarrito.js"));
 // para usar las rutas de productos.js
 app.use("/productos", rutasProductos);
+
+app.use("/pagos", rutasPagos);
 
 app.get("/", (req, res) => {
   res.json({ message: "API funcionando correctamente" });

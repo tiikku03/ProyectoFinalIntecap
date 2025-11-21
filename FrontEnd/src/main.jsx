@@ -6,12 +6,15 @@ import App from './App.jsx'
 import LogIn from './pages/LogIn.jsx'
 import CrearUsuario from './pages/CrearUsuario.jsx'
 import { AuthProvider } from './Context/LogInContext.jsx'
-import { CarritoProvider } from './Context/CarritoContex.jsx'
+import { CarritoProvider } from './Context/CarritoContext.jsx'
 import ProtectedRoute from './Components/ProtectedRoute.jsx'
 /*========================= RUTAS DEL CLIENTE ==========================*/
 import CostumerLayout from './layouts/CostumerLayout.jsx'
 import Home from './pages/Costumer/Home.jsx'
 import Carrito from './pages/Costumer/Carrito.jsx'
+import Envio from './pages/Costumer/Envio.jsx'
+import Pago from './pages/Costumer/Pago.jsx'
+import Revision from './pages/Costumer/Revision.jsx'
 import Producto from './pages/Costumer/Producto.jsx'
 import Categoria from './pages/Costumer/Categoria.jsx'
 
@@ -36,6 +39,9 @@ createRoot(document.getElementById('root')).render(
           <Route index element={<Home />} />
           <Route path='home' element={<Home />} />
           <Route path='carrito' element={<Carrito />} />
+          <Route path='checkout' element={<Envio />} />
+          <Route path='pago' element={<Pago />} />
+          <Route path='revision' element={<Revision />} />
           <Route path='producto/:id' element={<Producto />} />
           <Route path='categoria/:categoria' element={<Categoria />}></Route>
         </Route>

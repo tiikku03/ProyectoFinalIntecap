@@ -5,7 +5,11 @@ const carritoController = require('../Controllers/carrito.controller');
 // Middleware para que el router pueda leer JSON
 router.use(express.json());
 
-// GET - Obtener carrito por ID de usuario
+// POST - Crear carrito para un usuario
+// Body JSON: { "idUsuario": 1 }
+router.post('/crear', carritoController.crearCarrito);
+
+// GET - Obtener carrito por ID de usuario (crea uno automáticamente si no existe)
 // Parámetro URL: idUsuario (número)
 // Ejemplo: GET /carrito/usuario/5
 router.get('/usuario/:idUsuario', carritoController.obtenerCarritoPorUsuario);

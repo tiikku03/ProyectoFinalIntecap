@@ -1,16 +1,65 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiEye } from "react-icons/fi";
+import { FiEye, FiShoppingCart, FiCheck } from "react-icons/fi";
+import { useCarrito } from "../../Context/CarritoContext";
+import { useAuth } from "../../Context/LogInContext";
 
 function TarjetaProducto({ producto }) {
     const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
+    const { agregarAlCarrito } = useCarrito();
     const [isHovered, setIsHovered] = useState(false);
+    const [agregando, setAgregando] = useState(false);
+    const [productoAgregado, setProductoAgregado] = useState(false);
 
     // Obtener la URL de la imagen (soporta tanto url_imagen como imagen_url)
     const imagenUrl = producto.url_imagen || producto.imagen_url;
 
     const handleVerMas = () => {
         navigate(`/producto/${producto.id_producto}`);
+    };
+
+    const handleAgregarAlCarrito = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Si no está autenticado, redirigir al login
+        if (!isAuthenticated) {
+            const confirmar = window.confirm('Debes iniciar sesión para agregar productos al carrito. ¿Quieres ir a la página de login?');
+            if (confirmar) {
+                navigate('/login');
+            }
+            return;
+        }
+
+        if (!producto || agregando || productoAgregado) return;
+
+        setAgregando(true);
+
+        try {
+            const resultado = await agregarAlCarrito(producto, 1);
+
+            if (resultado.success) {
+                setProductoAgregado(true);
+
+                // Resetear el estado después de 2 segundos
+                setTimeout(() => {
+                    setProductoAgregado(false);
+                }, 2000);
+            } else if (resultado.requireAuth) {
+                const confirmar = window.confirm(resultado.message + '. ¿Quieres ir a la página de login?');
+                if (confirmar) {
+                    navigate('/login');
+                }
+            } else {
+                alert(resultado.message || 'Error al agregar al carrito');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al agregar al carrito');
+        } finally {
+            setAgregando(false);
+        }
     };
 
     return (
@@ -75,8 +124,31 @@ function TarjetaProducto({ producto }) {
                     </p>
                 </div>
 
-                <button className="w-full bg-white border-2 border-gray-800 text-gray-800 py-2 px-4 rounded-lg font-medium hover:bg-gray-800 hover:text-white transition-colors duration-300">
-                    Agregar al Carrito
+                <button
+                    onClick={handleAgregarAlCarrito}
+                    disabled={agregando || productoAgregado}
+                    className={`w-full py-2 px-4 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2 ${
+                        productoAgregado
+                            ? 'bg-green-600 text-white border-2 border-green-600'
+                            : 'bg-white border-2 border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white'
+                    } ${agregando || productoAgregado ? 'cursor-not-allowed' : ''}`}
+                >
+                    {productoAgregado ? (
+                        <>
+                            <FiCheck className="w-5 h-5" />
+                            Agregado
+                        </>
+                    ) : agregando ? (
+                        <>
+                            <div className="w-5 h-5 border-2 border-gray-800 border-t-transparent rounded-full animate-spin"></div>
+                            Agregando...
+                        </>
+                    ) : (
+                        <>
+                            <FiShoppingCart className="w-5 h-5" />
+                            Agregar al Carrito
+                        </>
+                    )}
                 </button>
             </div>
         </div>

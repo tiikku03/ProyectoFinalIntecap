@@ -28,10 +28,37 @@ async function totalCarrito(idCarrito){
 }
 
 
-// Obtener carrito por ID de usuario
+// Crear carrito para un usuario
+async function crearCarrito(idUsuario) {
+    try {
+        const nuevoCarrito = await prisma.carrito.create({
+            data: {
+                id_usuario: parseInt(idUsuario)
+            },
+            include: {
+                detalle_carrito: {
+                    include: {
+                        productos: true
+                    }
+                }
+            }
+        });
+
+        return {
+            ...nuevoCarrito,
+            detalle_carrito: [],
+            total: "0.00",
+            cantidadItems: 0
+        };
+    } catch (error) {
+        throw new Error('Error al crear el carrito: ' + error.message);
+    }
+}
+
+// Obtener carrito por ID de usuario (crea uno si no existe)
 async function obtenerCarritoPorUsuario(idUsuario) {
     try {
-        const carrito = await prisma.carrito.findFirst({
+        let carrito = await prisma.carrito.findFirst({
             where: { id_usuario: parseInt(idUsuario) },
             include: {
                 detalle_carrito: {
@@ -42,11 +69,22 @@ async function obtenerCarritoPorUsuario(idUsuario) {
             }
         });
 
+        // Si no existe el carrito, crear uno nuevo
         if (!carrito) {
-            return null;
+            return await crearCarrito(idUsuario);
         }
 
-        // Calcular el total del carrito
+        // Si el carrito está vacío, retornar directamente
+        if (!carrito.detalle_carrito || carrito.detalle_carrito.length === 0) {
+            return {
+                ...carrito,
+                detalle_carrito: [],
+                total: "0.00",
+                cantidadItems: 0
+            };
+        }
+
+        // Calcular el total del carrito y cantidad de productos diferentes
         let total = 0;
         const itemsConSubtotal = carrito.detalle_carrito.map(item => {
             const subtotal = parseFloat(item.productos.precio) * item.Cantidad;
@@ -58,6 +96,7 @@ async function obtenerCarritoPorUsuario(idUsuario) {
         });
 
         // Retornar carrito con items modificados y total
+        // cantidadItems representa la cantidad de productos DIFERENTES (no la suma de cantidades)
         return {
             ...carrito,
             detalle_carrito: itemsConSubtotal,
@@ -182,6 +221,7 @@ async function vaciarCarrito(idCarrito) {
 
 module.exports = {
     totalCarrito,
+    crearCarrito,
     obtenerCarritoPorUsuario,
     agregarProductoAlCarrito,
     actualizarCantidadProducto,
