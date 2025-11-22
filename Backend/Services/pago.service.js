@@ -146,34 +146,17 @@ async function capturarPagoPayPal(datos) {
  * Crear pedido desde el carrito
  */
 async function crearPedidoDesdeCarrito(datos) {
-    const { idUsuario, datosEnvio, metodoPago } = datos;
+    const { idUsuario, datosEnvio, metodoPago, productos, total } = datos;
 
     try {
-        // Obtener el carrito del usuario
-        const carrito = await prisma.carrito.findFirst({
-            where: { id_usuario: idUsuario },
-            include: {
-                detalle_carrito: {
-                    include: {
-                        productos: true,
-                    },
-                },
-            },
-        });
-
-        if (!carrito || !carrito.detalle_carrito || carrito.detalle_carrito.length === 0) {
+        // Validar que se enviaron productos
+        if (!productos || productos.length === 0) {
             throw {
                 status: 400,
-                message: 'El carrito está vacío',
-                code: 'EMPTY_CART',
+                message: 'No se enviaron productos para el pedido',
+                code: 'NO_PRODUCTS',
             };
         }
-
-        // Calcular el total
-        let total = 0;
-        carrito.detalle_carrito.forEach(item => {
-            total += parseFloat(item.productos.precio) * item.Cantidad;
-        });
 
         // Crear el pedido
         const pedido = await prisma.pedidos.create({
@@ -184,21 +167,31 @@ async function crearPedidoDesdeCarrito(datos) {
                 metodo_pago: metodoPago,
                 direccion_envio: `${datosEnvio.direccion}, ${datosEnvio.departamento}, ${datosEnvio.codigoPostal}, ${datosEnvio.pais}`,
                 detalle_pedido: {
-                    create: carrito.detalle_carrito.map(item => ({
+                    create: productos.map(item => ({
                         id_producto: item.ProductoID,
                         cantidad: item.Cantidad,
                     })),
                 },
             },
             include: {
-                detalle_pedido: true,
+                detalle_pedido: {
+                    include: {
+                        productos: true,
+                    },
+                },
             },
         });
 
-        // Vaciar el carrito
-        await prisma.detalle_carrito.deleteMany({
-            where: { CarritoID: carrito.id_carrito },
+        // Vaciar el carrito del usuario
+        const carrito = await prisma.carrito.findFirst({
+            where: { id_usuario: idUsuario },
         });
+
+        if (carrito) {
+            await prisma.detalle_carrito.deleteMany({
+                where: { CarritoID: carrito.id_carrito },
+            });
+        }
 
         return pedido;
     } catch (error) {

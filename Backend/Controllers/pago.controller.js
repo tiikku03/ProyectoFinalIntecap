@@ -12,7 +12,7 @@ const { successResponse, errorResponse } = require('../utils/responseHelper');
  */
 async function controllerCrearPedido(req, res) {
     try {
-        const { idUsuario, datosEnvio, metodoPago } = req.body;
+        const { idUsuario, datosEnvio, metodoPago, productos, total } = req.body;
 
         if (!idUsuario || !datosEnvio || !metodoPago) {
             return errorResponse(
@@ -27,13 +27,15 @@ async function controllerCrearPedido(req, res) {
             idUsuario,
             datosEnvio,
             metodoPago,
+            productos,
+            total,
         });
 
         return successResponse(
             res,
             201,
             'Pedido creado exitosamente',
-            resultado
+            { pedido: resultado }
         );
     } catch (error) {
         return errorResponse(

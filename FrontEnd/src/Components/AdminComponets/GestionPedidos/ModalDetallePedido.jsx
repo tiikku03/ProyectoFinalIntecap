@@ -16,13 +16,19 @@ const ModalDetallePedido = ({ isOpen, onClose, pedidoId }) => {
       setLoading(true);
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000';
       const response = await fetch(`${apiUrl}/pedidos/${pedidoId}`);
-      const data = await response.json();
 
-      if (data.success) {
-        setPedido(data.data);
+      if (!response.ok) {
+        throw new Error('Error al obtener el pedido');
       }
+
+      const data = await response.json();
+      console.log('Detalle del pedido:', data);
+
+      // El endpoint devuelve el pedido directamente, no dentro de data.data
+      setPedido(data);
     } catch (error) {
       console.error('Error al obtener detalle del pedido:', error);
+      alert('Error al cargar los detalles del pedido');
     } finally {
       setLoading(false);
     }
@@ -102,12 +108,12 @@ const ModalDetallePedido = ({ isOpen, onClose, pedidoId }) => {
                             Cantidad: {item.cantidad}
                           </div>
                           <div className="text-sm text-gray-600">
-                            GTQ {parseFloat(item.productos?.precio || 0).toFixed(2)} c/u
+                            ${parseFloat(item.productos?.precio || 0).toFixed(2)} c/u
                           </div>
                         </div>
                         <div className="text-right">
                           <div className="font-semibold text-gray-900">
-                            GTQ {(parseFloat(item.productos?.precio || 0) * item.cantidad).toFixed(2)}
+                            ${(parseFloat(item.productos?.precio || 0) * item.cantidad).toFixed(2)}
                           </div>
                         </div>
                       </div>
@@ -119,23 +125,17 @@ const ModalDetallePedido = ({ isOpen, onClose, pedidoId }) => {
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Subtotal</span>
                       <span className="text-gray-900">
-                        GTQ {(parseFloat(pedido.total || 0) * 0.84).toFixed(2)}
+                        ${parseFloat(pedido.total || 0).toFixed(2)}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Envío</span>
                       <span className="text-green-600">Gratis</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">IVA (16%)</span>
-                      <span className="text-gray-900">
-                        GTQ {(parseFloat(pedido.total || 0) * 0.16).toFixed(2)}
-                      </span>
-                    </div>
                     <div className="flex justify-between text-lg font-bold pt-2 border-t border-gray-200">
                       <span className="text-gray-900">Total</span>
                       <span className="text-gray-900">
-                        GTQ {parseFloat(pedido.total || 0).toFixed(2)}
+                        ${parseFloat(pedido.total || 0).toFixed(2)}
                       </span>
                     </div>
                   </div>

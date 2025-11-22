@@ -69,4 +69,46 @@ const editarEstadoPedido = async (data) => {
 
 
 
-module.exports = { cancelarPedido, editarEstadoPedido };
+async function obtenerPedidoPorId(idPedido) {
+  try {
+    const pedido = await prisma.pedidos.findUnique({
+      where: { id_pedido: Number(idPedido) },
+      include: {
+        detalle_pedido: {
+          include: {
+            productos: true,
+          },
+        },
+        usuarios: {
+          select: {
+            id_usuario: true,
+            nombre: true,
+            apellido: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    if (!pedido) {
+      throw {
+        status: 404,
+        message: "Pedido no encontrado",
+        code: "ORDER_NOT_FOUND",
+      };
+    }
+
+    console.log('===== PEDIDO ENCONTRADO =====');
+    console.log(JSON.stringify(pedido, null, 2));
+
+    return pedido;
+  } catch (error) {
+    throw {
+      status: error.status || 500,
+      message: error.message || "Error al obtener el pedido",
+      code: error.code || "INTERNAL_ERROR",
+    };
+  }
+}
+
+module.exports = { cancelarPedido, editarEstadoPedido, obtenerPedidoPorId };

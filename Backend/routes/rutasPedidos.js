@@ -1,5 +1,6 @@
 const express = require("express");
 const {controllerCancelarPedido, controllerEditarEstadoPedido} = require("../Controllers/pedido.controller.js");
+const { obtenerPedidoPorId } = require("../Services/pedidos.service.js");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
 const { successResponse, errorResponse } = require('../utils/responseHelper');
@@ -135,13 +136,83 @@ router.get("/leerpedidos", async (req, res) => {
 router.get("/total", async (req, res) => {
   try {
     const totalPedidos = await prisma.pedidos.count();
-    
+
     return successResponse(res, 200, "Total de pedidos obtenido correctamente", {
       total: totalPedidos
     });
   } catch (error) {
     console.error("Error al obtener total de pedidos:", error);
     return errorResponse(res, 500, "Error interno del servidor", "INTERNAL_ERROR");
+  }
+});
+
+// ===================================================================
+// OBTENER PEDIDOS POR USUARIO
+// ===================================================================
+router.get("/usuario/:idUsuario", async (req, res) => {
+  try {
+    const { idUsuario } = req.params;
+    const { estado } = req.query;
+
+    if (!idUsuario) {
+      return errorResponse(res, 400, "ID de usuario es requerido", "MISSING_USER_ID");
+    }
+
+    // Construir filtro dinámico
+    const filtro = {
+      id_usuario: Number(idUsuario)
+    };
+
+    // Si se especifica un estado, agregarlo al filtro
+    if (estado && estado !== "todos") {
+      filtro.estado = estado;
+    }
+
+    const pedidos = await prisma.pedidos.findMany({
+      where: filtro,
+      orderBy: { fecha_pedido: "desc" },
+      include: {
+        detalle_pedido: {
+          include: {
+            productos: {
+              select: {
+                nombre: true,
+                precio: true,
+                url_imagen: true
+              }
+            }
+          }
+        }
+      }
+    });
+
+    return successResponse(res, 200, "Pedidos del usuario obtenidos correctamente", {
+      pedidos,
+      total: pedidos.length
+    });
+  } catch (error) {
+    console.error("Error al obtener pedidos del usuario:", error);
+    return errorResponse(res, 500, "Error interno del servidor al obtener pedidos", "INTERNAL_ERROR");
+  }
+});
+
+// ===================================================================
+// OBTENER PEDIDO POR ID (esta ruta debe ir al final)
+// ===================================================================
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const pedido = await obtenerPedidoPorId(id);
+
+    return res.status(200).json(pedido);
+  } catch (error) {
+    console.error("Error al obtener pedido:", error);
+    return errorResponse(
+      res,
+      error.status || 500,
+      error.message || "Error al obtener el pedido",
+      error.code || "INTERNAL_ERROR"
+    );
   }
 });
 

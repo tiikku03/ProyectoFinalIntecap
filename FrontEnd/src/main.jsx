@@ -15,8 +15,10 @@ import Carrito from './pages/Costumer/Carrito.jsx'
 import Envio from './pages/Costumer/Envio.jsx'
 import Pago from './pages/Costumer/Pago.jsx'
 import Revision from './pages/Costumer/Revision.jsx'
+import Confirmacion from './pages/Costumer/Confirmacion.jsx'
 import Producto from './pages/Costumer/Producto.jsx'
 import Categoria from './pages/Costumer/Categoria.jsx'
+import HistorialPedidos from './pages/Costumer/HistorialPedidos.jsx'
 
 
 /*========================= RUTAS DEL USUARIO ==========================*/
@@ -42,8 +44,10 @@ createRoot(document.getElementById('root')).render(
           <Route path='checkout' element={<Envio />} />
           <Route path='pago' element={<Pago />} />
           <Route path='revision' element={<Revision />} />
+          <Route path='confirmacion' element={<Confirmacion />} />
           <Route path='producto/:id' element={<Producto />} />
           <Route path='categoria/:categoria' element={<Categoria />}></Route>
+          <Route path='historial-pedidos' element={<HistorialPedidos />} />
         </Route>
         
         {/* Rutas de autenticación */}

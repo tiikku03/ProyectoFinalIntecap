@@ -58,10 +58,44 @@ function Revision({ carrito, totales }) {
             return;
         }
 
+        // Verificar que hay productos en el carrito
+        if (!carrito || !carrito.detalle_carrito || carrito.detalle_carrito.length === 0) {
+            alert("No hay productos en el carrito para crear el pedido.");
+            navigate("/carrito");
+            return;
+        }
+
         setProcesando(true);
 
+        // Debug: Verificar qué se está enviando
+        console.log("Carrito completo:", carrito);
+        console.log("Detalle carrito:", carrito?.detalle_carrito);
+        console.log("Totales:", totales);
+
         try {
-            // Crear el pedido en el backend
+            // Extraer solo los datos necesarios de los productos para evitar referencias circulares
+            const productosLimpios = carrito.detalle_carrito.map(item => ({
+                ProductoID: item.ProductoID,
+                Cantidad: item.Cantidad,
+            }));
+
+            const bodyData = {
+                idUsuario: usuario.id_usuario,
+                datosEnvio: datosEnvio,
+                metodoPago: metodoPago,
+                productos: productosLimpios,
+                total: parseFloat(totales.total),
+            };
+
+            console.log("Body que se enviará:", bodyData);
+            console.log("Productos limpios:", productosLimpios);
+
+            // Intentar hacer stringify y ver qué pasa
+            const bodyString = JSON.stringify(bodyData);
+            console.log("Body después de stringify:", bodyString);
+            console.log("Length del string:", bodyString.length);
+
+            // Crear el pedido en el backend usando el carrito actual
             const response = await fetch(
                 `${import.meta.env.VITE_API_URL}/pagos/crear-pedido`,
                 {
@@ -69,27 +103,21 @@ function Revision({ carrito, totales }) {
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({
-                        idUsuario: usuario.id_usuario,
-                        datosEnvio: datosEnvio,
-                        metodoPago: metodoPago,
-                    }),
+                    body: bodyString,
                 }
             );
 
             const data = await response.json();
 
-            if (data.success) {
+            if (data.success && data.data && data.data.pedido) {
                 // Limpiar localStorage
                 localStorage.removeItem("datosEnvio");
                 localStorage.removeItem("metodoPago");
                 localStorage.removeItem("datosTarjeta");
+                localStorage.removeItem("carritoCheckout");
 
-                // Mostrar mensaje de éxito
-                alert("¡Pedido creado exitosamente!");
-
-                // Redirigir a página de confirmación o inicio
-                navigate("/");
+                // Redirigir a página de confirmación con el ID del pedido
+                navigate(`/confirmacion?pedido=${data.data.pedido.id_pedido}`);
             } else {
                 throw new Error(data.message || "Error al crear el pedido");
             }

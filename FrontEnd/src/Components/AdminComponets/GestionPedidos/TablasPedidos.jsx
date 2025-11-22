@@ -58,9 +58,9 @@ const TablasPedidos = ({ pedidos, loading, loadingMore, onLoadMore, onVerDetalle
   };
 
   const formatearPrecio = (precio) => {
-    return new Intl.NumberFormat('es-GT', {
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'GTQ'
+      currency: 'USD'
     }).format(precio);
   };
 

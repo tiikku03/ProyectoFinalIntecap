@@ -28,6 +28,14 @@ function Envio({ carrito, totales }) {
         // Guardar datos de envío en localStorage para usarlos en el siguiente paso
         localStorage.setItem("datosEnvio", JSON.stringify(datosEnvio));
 
+        // Guardar snapshot del carrito para el pedido
+        if (carrito && carrito.detalle_carrito) {
+            localStorage.setItem("carritoCheckout", JSON.stringify({
+                productos: carrito.detalle_carrito,
+                totales: totales
+            }));
+        }
+
         // Navegar a la página de pago
         navigate("/pago");
     };

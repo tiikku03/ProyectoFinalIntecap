@@ -70,7 +70,7 @@ function UserModal({ userModalOpen, setUserModalOpen }) {
                                 </Link>
 
                                 <Link
-                                    to="/pedidos"
+                                    to="/historial-pedidos"
                                     onClick={() => setUserModalOpen(false)}
                                     className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
                                 >
@@ -78,14 +78,17 @@ function UserModal({ userModalOpen, setUserModalOpen }) {
                                     <span className="text-gray-700">Mis Pedidos</span>
                                 </Link>
 
-                                <Link
-                                    to="/configuracion"
-                                    onClick={() => setUserModalOpen(false)}
-                                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
-                                >
-                                    <FiSettings className="w-5 h-5 text-gray-600" />
-                                    <span className="text-gray-700">Configuración</span>
-                                </Link>
+                                {/* Opción de administración solo para admins */}
+                                {usuario?.rol === "admin" && (
+                                    <Link
+                                        to="/admin/dashboard"
+                                        onClick={() => setUserModalOpen(false)}
+                                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-blue-50 transition-colors border-t border-gray-200 mt-2 pt-4"
+                                    >
+                                        <FiSettings className="w-5 h-5 text-blue-600" />
+                                        <span className="text-blue-700 font-medium">Administración</span>
+                                    </Link>
+                                )}
 
                                 <button
                                     onClick={handleLogout}
