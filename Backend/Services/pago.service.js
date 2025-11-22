@@ -1,123 +1,102 @@
-const Stripe = require('stripe');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-// Inicializar Stripe con la clave secreta
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
 /**
- * Crear una intención de pago con Stripe
+ * Crear una intención de pago con Stripe (SIMULADO - SIN API REAL)
  */
 async function crearIntencionPagoStripe(datos) {
     const { idPedido, monto, moneda = 'usd' } = datos;
 
     try {
-        // Crear la intención de pago
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount: Math.round(monto * 100), // Stripe maneja centavos
-            currency: moneda,
-            metadata: {
-                idPedido: idPedido.toString(),
-            },
-            automatic_payment_methods: {
-                enabled: true,
-            },
-        });
+        const paymentIntentId = `pi_sim_${Date.now()}`;
+        const clientSecret = `${paymentIntentId}_secret`;
+
+        console.log(`[SIMULADO] Pago Stripe - Pedido: ${idPedido}, Monto: ${monto} ${moneda}`);
 
         return {
-            clientSecret: paymentIntent.client_secret,
-            paymentIntentId: paymentIntent.id,
+            clientSecret: clientSecret,
+            paymentIntentId: paymentIntentId,
         };
     } catch (error) {
-        console.error('Error al crear intención de pago Stripe:', error);
+        console.error('Error al simular pago Stripe:', error);
         throw {
             status: 500,
-            message: 'Error al procesar el pago con Stripe',
-            code: 'STRIPE_ERROR',
+            message: 'Error al procesar el pago',
+            code: 'PAYMENT_ERROR',
         };
     }
 }
 
 /**
- * Confirmar pago de Stripe
+ * Confirmar pago de Stripe (SIMULADO - SIN API REAL)
  */
 async function confirmarPagoStripe(datos) {
     const { paymentIntentId, idPedido } = datos;
 
     try {
-        // Verificar el estado del pago
-        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+        console.log(`[SIMULADO] Confirmando pago Stripe - Pedido: ${idPedido}`);
 
-        if (paymentIntent.status === 'succeeded') {
-            // Actualizar el estado del pedido en la base de datos
-            await prisma.pedidos.update({
-                where: { id_pedido: idPedido },
-                data: {
-                    estado: 'Confirmado',
-                    id_transaccion: paymentIntentId,
-                    metodo_pago: 'Stripe',
-                },
-            });
+        // Actualizar el estado del pedido como confirmado
+        await prisma.pedidos.update({
+            where: { id_pedido: idPedido },
+            data: {
+                estado: 'Confirmado',
+                id_transaccion: paymentIntentId,
+                metodo_pago: 'Stripe',
+            },
+        });
 
-            return {
-                success: true,
-                message: 'Pago confirmado exitosamente',
-                transactionId: paymentIntentId,
-            };
-        } else {
-            throw {
-                status: 400,
-                message: 'El pago no fue exitoso',
-                code: 'PAYMENT_NOT_SUCCESSFUL',
-            };
-        }
+        return {
+            success: true,
+            message: 'Pago confirmado exitosamente',
+            transactionId: paymentIntentId,
+        };
     } catch (error) {
-        console.error('Error al confirmar pago Stripe:', error);
+        console.error('Error al confirmar pago:', error);
         throw {
             status: error.status || 500,
             message: error.message || 'Error al confirmar el pago',
-            code: error.code || 'STRIPE_CONFIRM_ERROR',
+            code: error.code || 'PAYMENT_CONFIRM_ERROR',
         };
     }
 }
 
 /**
- * Crear orden de PayPal
+ * Crear orden de PayPal (SIMULADO - SIN API REAL)
  */
 async function crearOrdenPayPal(datos) {
     const { idPedido, monto, moneda = 'USD' } = datos;
 
     try {
-        // Nota: Necesitarás configurar el SDK de PayPal según la nueva versión
-        // Por ahora, retornamos una estructura básica
-        // En producción, debes implementar la integración completa con PayPal
+        const orderId = `PAYPAL_SIM_${Date.now()}`;
+
+        console.log(`[SIMULADO] Orden PayPal - Pedido: ${idPedido}, Monto: ${monto} ${moneda}`);
 
         return {
-            orderId: `PAYPAL_ORDER_${Date.now()}`,
-            approvalUrl: `https://www.sandbox.paypal.com/checkoutnow?token=PAYPAL_ORDER_${Date.now()}`,
-            message: 'Orden de PayPal creada. Redirige al usuario a approvalUrl',
+            orderId: orderId,
+            approvalUrl: '#',
+            message: 'Orden de PayPal creada (simulada)',
         };
     } catch (error) {
-        console.error('Error al crear orden PayPal:', error);
+        console.error('Error al simular orden PayPal:', error);
         throw {
             status: 500,
-            message: 'Error al procesar el pago con PayPal',
-            code: 'PAYPAL_ERROR',
+            message: 'Error al procesar el pago',
+            code: 'PAYMENT_ERROR',
         };
     }
 }
 
 /**
- * Capturar pago de PayPal
+ * Capturar pago de PayPal (SIMULADO - SIN API REAL)
  */
 async function capturarPagoPayPal(datos) {
     const { orderId, idPedido } = datos;
 
     try {
-        // Aquí implementarías la captura real del pago con PayPal
-        // Por ahora, simulamos una respuesta exitosa
+        console.log(`[SIMULADO] Capturando pago PayPal - Pedido: ${idPedido}`);
 
-        // Actualizar el estado del pedido en la base de datos
+        // Actualizar el estado del pedido
         await prisma.pedidos.update({
             where: { id_pedido: idPedido },
             data: {
@@ -133,11 +112,11 @@ async function capturarPagoPayPal(datos) {
             transactionId: orderId,
         };
     } catch (error) {
-        console.error('Error al capturar pago PayPal:', error);
+        console.error('Error al capturar pago:', error);
         throw {
             status: error.status || 500,
-            message: error.message || 'Error al confirmar el pago con PayPal',
-            code: error.code || 'PAYPAL_CAPTURE_ERROR',
+            message: error.message || 'Error al confirmar el pago',
+            code: error.code || 'PAYMENT_CAPTURE_ERROR',
         };
     }
 }
