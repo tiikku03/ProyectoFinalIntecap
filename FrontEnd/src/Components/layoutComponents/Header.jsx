@@ -3,13 +3,14 @@ import { FiMenu, FiHeart, FiShoppingCart, FiUser } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../Context/LogInContext.jsx";
 import { useCarrito } from "../../Context/CarritoContext.jsx";
+import { useWishlist } from "../../Context/WishlistContext.jsx";
 import Sidebar from "../CostumerComponents/Sidebar";
 import UserModal from "../CostumerComponents/UserModal";
 
 function Header(){
     const { isAuthenticated } = useAuth();
     const { cantidadItems } = useCarrito();
-    const [wishlistCount] = useState(5); // Contador de wishlist
+    const { cantidadItems: wishlistCount } = useWishlist();
     const [menuOpen, setMenuOpen] = useState(false); // Estado del menú lateral
     const [userModalOpen, setUserModalOpen] = useState(false); // Estado del modal de usuario
 

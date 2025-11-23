@@ -22,6 +22,7 @@ app.use(
       "https://proyectofinal-frontend-production.up.railway.app",
       "https://proyectofinal-backend-production-f665.up.railway.app",
       "http://localhost:5173",
+      "http://localhost:5175",
     ],
     credentials: true
   })

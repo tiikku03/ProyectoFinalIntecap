@@ -12,7 +12,7 @@ function ReseñasProducto({ idProducto }) {
         const fetchReseñas = async () => {
             try {
                 const response = await fetch(
-                    `${import.meta.env.VITE_API_URL}/reseñas/producto/${idProducto}`
+                    `${import.meta.env.VITE_API_URL}/resenas/producto/${idProducto}`
                 );
                 const data = await response.json();
 

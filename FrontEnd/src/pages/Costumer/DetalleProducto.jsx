@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { FiShoppingCart, FiHeart, FiTruck, FiStar } from "react-icons/fi";
+import { useParams, useNavigate } from "react-router-dom";
+import { FiShoppingCart, FiHeart, FiTruck, FiStar, FiArrowLeft } from "react-icons/fi";
+import { useWishlist } from "../../Context/WishlistContext";
 import ImagenProducto from "../../Components/CostumerComponents/DetallesProducto/ImagenProducto";
 import SelectorTalla from "../../Components/CostumerComponents/DetallesProducto/SelectorTalla";
 import SelectorColor from "../../Components/CostumerComponents/DetallesProducto/SelectorColor";
@@ -9,6 +10,8 @@ import TabsDescripcionReseñas from "../../Components/CostumerComponents/Detalle
 
 function DetalleProducto() {
     const { id } = useParams();
+    const navigate = useNavigate();
+    const { verificarEnWishlist, agregarAWishlist, eliminarDeWishlist, obtenerIdWishlist } = useWishlist();
     const [producto, setProducto] = useState(null);
     const [loading, setLoading] = useState(true);
     const [tallaSeleccionada, setTallaSeleccionada] = useState('M');
@@ -16,6 +19,7 @@ function DetalleProducto() {
     const [cantidad, setCantidad] = useState(1);
     const [promedioCalificacion, setPromedioCalificacion] = useState(0);
     const [totalReseñas, setTotalReseñas] = useState(0);
+    const [enWishlist, setEnWishlist] = useState(false);
 
     useEffect(() => {
         const fetchProducto = async () => {
@@ -58,6 +62,13 @@ function DetalleProducto() {
         }
     }, [id]);
 
+    // Verificar si el producto está en la wishlist
+    useEffect(() => {
+        if (producto) {
+            setEnWishlist(verificarEnWishlist(producto.id_producto));
+        }
+    }, [producto, verificarEnWishlist]);
+
     const handleAgregarAlCarrito = () => {
         const productoCarrito = {
             ...producto,
@@ -68,6 +79,33 @@ function DetalleProducto() {
 
         console.log("Agregar al carrito:", productoCarrito);
         alert("Producto agregado al carrito!");
+    };
+
+    const handleToggleWishlist = async () => {
+        if (enWishlist) {
+            // Eliminar de la wishlist
+            const idWishlist = obtenerIdWishlist(producto.id_producto);
+            const resultado = await eliminarDeWishlist(idWishlist);
+
+            if (resultado.success) {
+                setEnWishlist(false);
+            } else if (resultado.requireAuth) {
+                navigate('/login');
+            } else {
+                alert(resultado.message);
+            }
+        } else {
+            // Agregar a la wishlist
+            const resultado = await agregarAWishlist(producto.id_producto);
+
+            if (resultado.success) {
+                setEnWishlist(true);
+            } else if (resultado.requireAuth) {
+                navigate('/login');
+            } else {
+                alert(resultado.message);
+            }
+        }
     };
 
     const calcularDescuento = () => {
@@ -135,6 +173,15 @@ function DetalleProducto() {
 
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
+            {/* Botón de volver */}
+            <button
+                onClick={() => navigate(-1)}
+                className="inline-flex items-center gap-2 mb-6 px-4 py-2 text-gray-700 hover:text-blue-600 transition-colors"
+            >
+                <FiArrowLeft className="w-5 h-5" />
+                <span className="font-medium">Volver</span>
+            </button>
+
             <div className="flex flex-col lg:flex-row gap-8 mb-12">
                 <ImagenProducto imagenes={imagenes} />
 
@@ -204,7 +251,7 @@ function DetalleProducto() {
                         </div>
                     </div>
 
-                    {producto.stock > 0 && (
+                    {producto.stock > 0 ? (
                         <>
                             <SelectorTalla
                                 tallaSeleccionada={tallaSeleccionada}
@@ -235,13 +282,33 @@ function DetalleProducto() {
                                 </button>
 
                                 <button
-                                    className="px-6 py-3 border-2 border-gray-300 rounded-lg hover:border-red-400 hover:text-red-500 transition-colors"
-                                    aria-label="Añadir a lista de deseos"
+                                    onClick={handleToggleWishlist}
+                                    className={`px-6 py-3 border-2 rounded-lg transition-all duration-200 ${
+                                        enWishlist
+                                            ? 'bg-red-500 border-red-500 text-white hover:bg-red-600'
+                                            : 'border-gray-300 text-gray-700 hover:border-red-400 hover:text-red-500'
+                                    }`}
+                                    aria-label={enWishlist ? "Quitar de lista de deseos" : "Añadir a lista de deseos"}
                                 >
-                                    <FiHeart className="w-5 h-5" />
+                                    <FiHeart className={`w-5 h-5 ${enWishlist ? 'fill-current' : ''}`} />
                                 </button>
                             </div>
                         </>
+                    ) : (
+                        <div className="mb-6">
+                            <button
+                                onClick={handleToggleWishlist}
+                                className={`w-full flex items-center justify-center gap-2 px-6 py-3 border-2 rounded-lg transition-all duration-200 font-medium ${
+                                    enWishlist
+                                        ? 'bg-red-500 border-red-500 text-white hover:bg-red-600'
+                                        : 'border-red-400 text-red-600 hover:bg-red-50'
+                                }`}
+                                aria-label={enWishlist ? "Quitar de lista de deseos" : "Añadir a lista de deseos"}
+                            >
+                                <FiHeart className={`w-5 h-5 ${enWishlist ? 'fill-current' : ''}`} />
+                                {enWishlist ? 'En tu Lista de Deseos' : 'Agregar a Lista de Deseos'}
+                            </button>
+                        </div>
                     )}
 
                     <div className="border-t pt-6 space-y-3 text-sm">

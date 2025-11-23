@@ -7,11 +7,13 @@ import LogIn from './pages/LogIn.jsx'
 import CrearUsuario from './pages/CrearUsuario.jsx'
 import { AuthProvider } from './Context/LogInContext.jsx'
 import { CarritoProvider } from './Context/CarritoContext.jsx'
+import { WishlistProvider } from './Context/WishlistContext.jsx'
 import ProtectedRoute from './Components/ProtectedRoute.jsx'
 /*========================= RUTAS DEL CLIENTE ==========================*/
 import CostumerLayout from './layouts/CostumerLayout.jsx'
 import Home from './pages/Costumer/Home.jsx'
 import Carrito from './pages/Costumer/Carrito.jsx'
+import Wishlist from './pages/Costumer/Wishlist.jsx'
 import Envio from './pages/Costumer/Envio.jsx'
 import Pago from './pages/Costumer/Pago.jsx'
 import Revision from './pages/Costumer/Revision.jsx'
@@ -35,20 +37,22 @@ createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <AuthProvider>
         <CarritoProvider>
-          {/* Rutas del Cliente */}
-          <Routes>
-        <Route path="/" element={<CostumerLayout />} >
-          <Route index element={<Home />} />
-          <Route path='home' element={<Home />} />
-          <Route path='carrito' element={<Carrito />} />
-          <Route path='checkout' element={<Envio />} />
-          <Route path='pago' element={<Pago />} />
-          <Route path='revision' element={<Revision />} />
-          <Route path='confirmacion' element={<Confirmacion />} />
-          <Route path='producto/:id' element={<Producto />} />
-          <Route path='categoria/:categoria' element={<Categoria />}></Route>
-          <Route path='historial-pedidos' element={<HistorialPedidos />} />
-        </Route>
+          <WishlistProvider>
+            {/* Rutas del Cliente */}
+            <Routes>
+          <Route path="/" element={<CostumerLayout />} >
+            <Route index element={<Home />} />
+            <Route path='home' element={<Home />} />
+            <Route path='carrito' element={<Carrito />} />
+            <Route path='wishlist' element={<Wishlist />} />
+            <Route path='checkout' element={<Envio />} />
+            <Route path='pago' element={<Pago />} />
+            <Route path='revision' element={<Revision />} />
+            <Route path='confirmacion' element={<Confirmacion />} />
+            <Route path='producto/:id' element={<Producto />} />
+            <Route path='categoria/:categoria' element={<Categoria />}></Route>
+            <Route path='historial-pedidos' element={<HistorialPedidos />} />
+          </Route>
         
         {/* Rutas de autenticación */}
         <Route path="login" element={<LogIn />} />
@@ -69,6 +73,7 @@ createRoot(document.getElementById('root')).render(
           <Route path="resenas" element={<GestionResenas />} />
         </Route>
         </Routes>
+          </WishlistProvider>
         </CarritoProvider>
       </AuthProvider>
     </BrowserRouter>

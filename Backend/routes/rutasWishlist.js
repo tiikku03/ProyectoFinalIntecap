@@ -118,10 +118,7 @@ router.get('/usuario/:id_usuario', async (req, res) => {
             }
         });
 
-        if (wishlistUsuario.length === 0) {
-            return errorResponse(res, 404, "El usuario no tiene productos en su wishlist", "EMPTY_WISHLIST");
-        }
-
+        // Devolver array vacío con success si no hay productos (no es un error)
         return successResponse(res, 200, "Wishlist del usuario obtenida correctamente", wishlistUsuario);
     } catch (error) {
         console.error("Error al obtener wishlist del usuario:", error);
