@@ -1,5 +1,6 @@
 const {PrismaClient} = require("@prisma/client");
 const prisma = new PrismaClient();
+const bcrypt = require("bcryptjs");
 
 async function informacionDefaultDB() {
     try {
@@ -9,7 +10,7 @@ async function informacionDefaultDB() {
                     nombre: "Emilio",
                     apellido: "Gonzalez",
                     email: "emiliogonzalez@example.com",
-                    contrase_a: "123456789",
+                    contrase_a: await bcrypt.hash("123456789", 10),
                     rol: "admin"
                 }
             ],
