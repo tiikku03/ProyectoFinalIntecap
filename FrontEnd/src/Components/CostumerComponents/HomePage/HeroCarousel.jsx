@@ -4,82 +4,61 @@ import { Link } from "react-router-dom";
 
 function HeroCarousel() {
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [productos, setProductos] = useState([]);
-    const [loading, setLoading] = useState(true);
 
-    // Fetch de productos desde la API
-    useEffect(() => {
-        const fetchProductos = async () => {
-            try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/productos/leerproductos?page=1`);
-                const data = await response.json();
-                
-                if (data.success && data.data.productos) {
-                    // Tomar solo los primeros 5 productos
-                    setProductos(data.data.productos.slice(0, 5));
-                }
-            } catch (error) {
-                console.error("Error al cargar productos:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProductos();
-    }, []);
+    // Array de URLs de imágenes personalizadas
+    const images = [
+        "https://elsolweb.tv/wp-content/uploads/2020/02/tienda-samsung1.jpg",
+        "https://soyummy.com/wp-content/uploads/2024/08/empty-aisles-at-a-supermarket-grocery-shopping-concepts-stockpack-istock-scaled-1-1024x674-1.jpg",
+        "https://blogs.hoy.es/red-decora/wp-content/uploads/sites/66/2014/02/Spar-supermercado-en-Budapest-dise%C3%B1o-por-LAB5-architects_12.jpg"
+        // Agrega aquí tus propias URLs
+    ];
 
     // Auto-play del carousel
     useEffect(() => {
-        if (productos.length === 0) return;
-
+        if (images.length === 0) return;
         const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % productos.length);
+            setCurrentSlide((prev) => (prev + 1) % images.length);
         }, 5000); // Cambia cada 5 segundos
-
         return () => clearInterval(interval);
-    }, [productos.length]);
+    }, [images.length]);
 
     const nextSlide = () => {
-        setCurrentSlide((prev) => (prev + 1) % productos.length);
+        setCurrentSlide((prev) => (prev + 1) % images.length);
     };
 
     const prevSlide = () => {
-        setCurrentSlide((prev) => (prev - 1 + productos.length) % productos.length);
+        setCurrentSlide((prev) => (prev - 1 + images.length) % images.length);
     };
 
-    if (loading) {
-        return (
-            <div className="w-full h-96 bg-gray-200 animate-pulse rounded-lg"></div>
-        );
-    }
-
-    if (productos.length === 0) {
+    if (images.length === 0) {
         return (
             <div className="w-full h-96 bg-gray-200 rounded-lg flex items-center justify-center">
-                <p className="text-gray-500">No hay productos disponibles</p>
+                <p className="text-gray-500">No hay imágenes disponibles</p>
             </div>
         );
     }
 
-    const currentProduct = productos[currentSlide];
-
     return (
         <div className="relative w-full h-64 md:h-96 bg-linear-to-br from-gray-200 to-gray-300 rounded-lg overflow-hidden shadow-lg">
+            {/* Imagen de fondo del slide */}
+            <div
+                className="absolute inset-0 w-full h-full bg-cover bg-center"
+                style={{
+                    backgroundImage: `url(${images[currentSlide]})`,
+                    filter: "brightness(0.7)",
+                    zIndex: 1
+                }}
+            ></div>
+
             {/* Contenido del slide */}
             <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center px-6 md:px-12 z-10">
-                    <h2 className="text-2xl md:text-4xl font-bold text-gray-800 mb-2 md:mb-4">
+                    <h2 className="text-2xl md:text-4xl font-bold text-white mb-2 md:mb-4">
                         Bienvenido a TiendaOnline
                     </h2>
-                    <p className="text-sm md:text-lg text-gray-700 mb-4 md:mb-6">
+                    <p className="text-sm md:text-lg text-white mb-4 md:mb-6">
                         Descubre los mejores productos con calidad garantizada
                     </p>
-                    <Link
-                        to={`/producto/${currentProduct.id_producto}`}
-                        className="inline-block bg-blue-600 text-white px-6 md:px-8 py-2 md:py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-md"
-                    >
-                        Comprar Ahora
-                    </Link>
                 </div>
             </div>
 
@@ -103,7 +82,7 @@ function HeroCarousel() {
 
             {/* Indicadores de slides */}
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
-                {productos.map((_, index) => (
+                {images.map((_, index) => (
                     <button
                         key={index}
                         onClick={() => setCurrentSlide(index)}
@@ -115,13 +94,6 @@ function HeroCarousel() {
                         aria-label={`Ir a slide ${index + 1}`}
                     />
                 ))}
-            </div>
-
-            {/* Información del producto actual (oculta visualmente pero útil para SEO) */}
-            <div className="sr-only">
-                <h3>{currentProduct.nombre}</h3>
-                <p>{currentProduct.descripcion}</p>
-                <p>Precio: ${currentProduct.precio}</p>
             </div>
         </div>
     );

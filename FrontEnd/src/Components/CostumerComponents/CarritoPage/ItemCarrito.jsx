@@ -24,7 +24,7 @@ function ItemCarrito({ item, onCantidadChange, onEliminar }) {
     };
 
     return (
-        <div className="flex gap-4 p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+        <div className="flex flex-col sm:flex-row gap-4 p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
             {/* Imagen del producto */}
             <div className="w-24 h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
                 {productos.url_imagen ? (
@@ -62,9 +62,9 @@ function ItemCarrito({ item, onCantidadChange, onEliminar }) {
                 </div>
             </div>
 
-            {/* Controles de cantidad */}
-            <div className="flex flex-col items-center justify-center gap-2">
-                <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+            {/* Controles de cantidad y acciones responsivas */}
+            <div className="flex flex-col items-center justify-center gap-2 sm:gap-0 sm:flex-row sm:items-center sm:justify-center">
+                <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden mb-2 sm:mb-0">
                     <button
                         onClick={handleDecrementar}
                         className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -82,21 +82,17 @@ function ItemCarrito({ item, onCantidadChange, onEliminar }) {
                         +
                     </button>
                 </div>
-            </div>
-
-            {/* Subtotal y botón eliminar */}
-            <div className="flex flex-col items-end justify-between">
-                <button
-                    onClick={handleEliminar}
-                    className="text-red-500 hover:text-red-700 transition-colors p-1"
-                    aria-label="Eliminar producto"
-                    title="Eliminar"
-                >
-                    <FiTrash2 className="w-5 h-5" />
-                </button>
-
-                <div className="text-right">
-                    <div className="text-lg font-bold text-gray-900">
+                {/* Subtotal y botón eliminar en móvil */}
+                <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto">
+                    <button
+                        onClick={handleEliminar}
+                        className="text-red-500 hover:text-red-700 transition-colors p-1"
+                        aria-label="Eliminar producto"
+                        title="Eliminar"
+                    >
+                        <FiTrash2 className="w-5 h-5" />
+                    </button>
+                    <div className="text-lg font-bold text-gray-900 ml-2 sm:ml-0">
                         ${subtotal}
                     </div>
                 </div>
