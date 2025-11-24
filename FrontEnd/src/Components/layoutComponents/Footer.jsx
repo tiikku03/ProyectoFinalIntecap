@@ -20,17 +20,17 @@ function Footer(){
                         
                         {/* Información de contacto */}
                         <div className="space-y-4">
-                            <a href="mailto:soporte@tiendaonline.com" className="flex items-center gap-4 hover:text-blue-400 transition-colors text-base md:text-lg">
+                            <a href="mailto:soporte@smartShopping.com" className="flex items-center gap-4 hover:text-blue-400 transition-colors text-base md:text-lg">
                                 <FiMail className="w-5 h-5 md:w-6 md:h-6 shrink-0" />
-                                <span>soporte@tiendaonline.com</span>
+                                <span>soporte@smartShopping.com</span>
                             </a>
-                            <a href="tel:+12345678890" className="flex items-center gap-4 hover:text-blue-400 transition-colors text-base md:text-lg">
+                            <a href="tel:+50256878950" className="flex items-center gap-4 hover:text-blue-400 transition-colors text-base md:text-lg">
                                 <FiPhone className="w-5 h-5 md:w-6 md:h-6 shrink-0" />
-                                <span>+1 (234) 567-890</span>
+                                <span>+502 5687-8950</span>
                             </a>
                             <div className="flex items-center gap-4 text-base md:text-lg">
                                 <FiMapPin className="w-5 h-5 md:w-6 md:h-6 shrink-0" />
-                                <span>Av. Principal 123, Ciudad, País</span>
+                                <span>Ciudad Guatemala</span>
                             </div>
                         </div>
                     </div>
@@ -39,11 +39,6 @@ function Footer(){
                     <div>
                         <h3 className="text-lg md:text-xl font-semibold text-white mb-6">Servicio al Cliente</h3>
                         <ul className="space-y-3">
-                            <li>
-                                <Link to="/mi-cuenta" className="hover:text-blue-400 transition-colors text-base md:text-lg">
-                                    Mi Cuenta
-                                </Link>
-                            </li>
                             <li>
                                 <Link to="/historial-pedidos" className="hover:text-blue-400 transition-colors text-base md:text-lg">
                                     Historial de Pedidos
@@ -74,9 +69,7 @@ function Footer(){
                 </div>
 
                 {/* Línea divisoria y copyright */}
-                <div className="border-t border-gray-700 mt-8 pt-6 text-center text-sm md:text-base text-gray-500">
-                    <p>&copy; {new Date().getFullYear()} TiendaOnline. Todos los derechos reservados.</p>
-                </div>
+                
             </div>
         </footer>
     )

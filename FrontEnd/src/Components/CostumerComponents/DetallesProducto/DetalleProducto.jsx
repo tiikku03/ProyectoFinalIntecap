@@ -60,7 +60,6 @@ function DetalleProducto() {
     }, [id]);
 
     const handleAgregarAlCarrito = () => {
-        // Aquí puedes integrar con tu contexto de carrito
         const productoCarrito = {
             ...producto,
             talla: tallaSeleccionada,
@@ -130,7 +129,6 @@ function DetalleProducto() {
         );
     }
 
-    // Preparar array de imágenes (soporta tanto url_imagen como imagen_url)
     const imagenUrl = producto.url_imagen || producto.imagen_url;
     const imagenes = imagenUrl ? [imagenUrl] : [];
 
@@ -187,12 +185,12 @@ function DetalleProducto() {
                     <div className="mb-6">
                         <div className="flex items-baseline gap-3">
                             <span className="text-4xl font-bold text-gray-900">
-                                ${producto.precio?.toFixed(2)}
+                                Q{producto.precio?.toFixed(2)}
                             </span>
                             {producto.precio_original && descuento > 0 && (
                                 <>
                                     <span className="text-xl text-gray-500 line-through">
-                                        ${producto.precio_original.toFixed(2)}
+                                        Q{producto.precio_original.toFixed(2)}
                                     </span>
                                     <span className="px-2 py-1 bg-red-100 text-red-600 text-sm font-semibold rounded">
                                         -{descuento}% OFF

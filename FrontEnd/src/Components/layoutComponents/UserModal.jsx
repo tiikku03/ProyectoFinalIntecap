@@ -61,15 +61,6 @@ function UserModal({ userModalOpen, setUserModalOpen }) {
                             {/* Opciones del menú */}
                             <nav className="space-y-2">
                                 <Link
-                                    to="/perfil"
-                                    onClick={() => setUserModalOpen(false)}
-                                    className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"
-                                >
-                                    <FiUser className="w-5 h-5 text-gray-600" />
-                                    <span className="text-gray-700">Mi Perfil</span>
-                                </Link>
-
-                                <Link
                                     to="/historial-pedidos"
                                     onClick={() => setUserModalOpen(false)}
                                     className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 transition-colors"

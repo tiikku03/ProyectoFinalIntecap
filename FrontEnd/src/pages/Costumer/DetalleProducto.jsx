@@ -209,12 +209,12 @@ function DetalleProducto() {
                     <div className="mb-6">
                         <div className="flex items-baseline gap-3">
                             <span className="text-4xl font-bold text-gray-900">
-                                ${parseFloat(producto.precio).toFixed(2)}
+                                Q{parseFloat(producto.precio).toFixed(2)}
                             </span>
                             {producto.precio_original && descuento > 0 && (
                                 <>
                                     <span className="text-xl text-gray-500 line-through">
-                                        ${parseFloat(producto.precio_original).toFixed(2)}
+                                        Q{parseFloat(producto.precio_original).toFixed(2)}
                                     </span>
                                     <span className="px-2 py-1 bg-red-100 text-red-600 text-sm font-semibold rounded">
                                         -{descuento}% OFF

@@ -76,13 +76,6 @@ function AdminHeader({ setSidebarOpen }) {
                         <FiMessageSquare className="w-4 h-4" />
                         Reseñas
                     </Link>
-                    <Link 
-                        to="/admin/configuracion" 
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors"
-                    >
-                        <FiSettings className="w-4 h-4" />
-                        Configuración
-                    </Link>
                 </nav>
 
                 {/* Botón de salir */}

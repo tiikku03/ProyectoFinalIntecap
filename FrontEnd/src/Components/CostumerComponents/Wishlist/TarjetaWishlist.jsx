@@ -73,12 +73,12 @@ const TarjetaWishlist = ({ producto, onEliminar, onAgregarAlCarrito }) => {
                     {/* Precios */}
                     <div className="flex items-center gap-3 mb-3">
                         <span className="text-2xl font-bold text-blue-600">
-                            ${parseFloat(precio).toFixed(2)}
+                            Q{parseFloat(precio).toFixed(2)}
                         </span>
                         {precio_anterior && (
                             <>
                                 <span className="text-lg text-gray-400 line-through">
-                                    ${parseFloat(precio_anterior).toFixed(2)}
+                                    Q{parseFloat(precio_anterior).toFixed(2)}
                                 </span>
                                 <span className="bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded">
                                     -{descuento}%

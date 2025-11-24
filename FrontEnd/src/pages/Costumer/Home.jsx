@@ -1,6 +1,6 @@
 import React from "react";
 import HeroCarousel from "../../Components/CostumerComponents/HomePage/HeroCarousel";
-import SeccionProductos from "../../Components/CostumerComponents/SeccionProductos";
+import SeccionProductos from "../../Components/CostumerComponents/HomePage/SeccionProductos";
 
 
 function Home(){

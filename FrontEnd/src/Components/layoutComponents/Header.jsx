@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../Context/LogInContext.jsx";
 import { useCarrito } from "../../Context/CarritoContext.jsx";
 import { useWishlist } from "../../Context/WishlistContext.jsx";
-import Sidebar from "../CostumerComponents/Sidebar";
-import UserModal from "../CostumerComponents/UserModal";
+import Sidebar from "./Sidebar.jsx";
+import UserModal from "./UserModal.jsx";
 
 function Header(){
     const { isAuthenticated } = useAuth();

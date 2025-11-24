@@ -93,7 +93,7 @@ function ItemCarrito({ item, onCantidadChange, onEliminar }) {
                         <FiTrash2 className="w-5 h-5" />
                     </button>
                     <div className="text-lg font-bold text-gray-900 ml-2 sm:ml-0">
-                        ${subtotal}
+                        Q{subtotal}
                     </div>
                 </div>
             </div>
