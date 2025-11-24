@@ -1,7 +1,7 @@
 require("dotenv/config");
 const express = require("express");
-const cors = require("cors");
 const helmet = require("helmet");
+const cors = require("cors");
 const rutasUsuario = require("./routes/rutasUsuarios.js");
 const rutasResenas = require("./routes/rutasResenas.js");
 const rutasWishlist = require("./routes/rutasWishlist.js");
@@ -17,7 +17,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(helmet());
 
-
+app.use(cors());
 
 app.use(express.json());
 
