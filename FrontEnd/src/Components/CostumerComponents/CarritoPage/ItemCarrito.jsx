@@ -58,7 +58,7 @@ function ItemCarrito({ item, onCantidadChange, onEliminar }) {
 
                 {/* Precio unitario */}
                 <div className="text-blue-600 font-semibold">
-                    ${parseFloat(productos.precio).toFixed(2)}
+                    Q{parseFloat(productos.precio).toFixed(2)}
                 </div>
             </div>
 
@@ -97,7 +97,7 @@ function ItemCarrito({ item, onCantidadChange, onEliminar }) {
 
                 <div className="text-right">
                     <div className="text-lg font-bold text-gray-900">
-                        ${subtotal}
+                        Q{subtotal}
                     </div>
                 </div>
             </div>

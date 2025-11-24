@@ -12,7 +12,7 @@ function ResumenPedido({ subtotal, envio, total }) {
             <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-gray-700">
                     <span>Subtotal</span>
-                    <span className="font-semibold">${subtotal}</span>
+                    <span className="font-semibold">Q{subtotal}</span>
                 </div>
 
                 <div className="flex justify-between text-gray-700">
@@ -20,7 +20,7 @@ function ResumenPedido({ subtotal, envio, total }) {
                     {parseFloat(envio) === 0 ? (
                         <span className="text-green-600 font-semibold">GRATIS</span>
                     ) : (
-                        <span className="font-semibold">${envio}</span>
+                        <span className="font-semibold">Q{envio}</span>
                     )}
                 </div>
             </div>
@@ -29,7 +29,7 @@ function ResumenPedido({ subtotal, envio, total }) {
             <div className="border-t pt-4 mb-6">
                 <div className="flex justify-between items-center">
                     <span className="text-lg font-bold text-gray-900">Total</span>
-                    <span className="text-2xl font-bold text-blue-600">${total}</span>
+                    <span className="text-2xl font-bold text-blue-600">Q{total}</span>
                 </div>
             </div>
 
