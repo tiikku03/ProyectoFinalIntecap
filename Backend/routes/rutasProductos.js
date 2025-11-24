@@ -186,3 +186,7 @@ router.delete('/eliminarProducto/:id', async ( req, res) => {
 router.get('/productosPorCategoria', obtnerProductosPorCategoria);
 
 module.exports = router;
+
+
+
+

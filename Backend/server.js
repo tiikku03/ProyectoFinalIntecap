@@ -8,6 +8,7 @@ const rutasWishlist = require("./routes/rutasWishlist.js");
 const rutasProductos = require("./routes/rutasProductos.js");
 const rutasPedidos = require("./routes/rutasPedidos.js");
 const rutasPagos = require("./routes/rutasPagos.js");
+const rutasCarrito = require("./routes/rutasCarrito.js");
 const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
@@ -21,13 +22,12 @@ https://proyectofinal-backend-production-f665.up.railway.app//productos/leerprod
 https://proyectofinal-backend-production-f665.up.railway.app//usuarios/crearusuario
 */
 
-// CORS primero
 app.use(cors({
   origin: (origin, callback) => callback(null, true),
   credentials: true
 }));
 
-// Helmet DESPUÉS y con configuraciones especiales
+
 app.use(helmet({
   crossOriginResourcePolicy: false,
   crossOriginEmbedderPolicy: false,
@@ -45,8 +45,8 @@ app.use("/pedidos", rutasPedidos);
 
 app.use("/wishlist", rutasWishlist);
 
-app.use("/carrito", require("./routes/rutasCarrito.js"));
-// para usar las rutas de productos.js
+app.use("/carrito", rutasCarrito);
+
 app.use("/productos", rutasProductos);
 
 app.use("/pagos", rutasPagos);
