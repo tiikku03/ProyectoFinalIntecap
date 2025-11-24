@@ -9,11 +9,13 @@ function SeccionProductos({ titulo = "Novedades", limite = 4, mostrarVerTodo = t
     useEffect(() => {
         const fetchProductos = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_URL}/productos/leerproductos?page=1`);
+                // Usar el endpoint por categoría
+                const categoriaFormateada = titulo.charAt(0).toUpperCase() + titulo.slice(1).toLowerCase();
+                const response = await fetch(`${import.meta.env.VITE_API_URL}/productos/productosPorCategoria?categoria=${categoriaFormateada}`);
                 const data = await response.json();
 
-                if (data.success && data.data.productos) {
-                    setProductos(data.data.productos.slice(0, limite));
+                if (data.success && Array.isArray(data.data)) {
+                    setProductos(data.data.slice(0, limite));
                 }
             } catch (error) {
                 console.error("Error al cargar productos:", error);
@@ -23,7 +25,7 @@ function SeccionProductos({ titulo = "Novedades", limite = 4, mostrarVerTodo = t
         };
 
         fetchProductos();
-    }, [limite]);
+    }, [limite, titulo]);
 
     if (loading) {
         return (
@@ -57,7 +59,7 @@ function SeccionProductos({ titulo = "Novedades", limite = 4, mostrarVerTodo = t
                 <h2 className="text-2xl font-bold text-gray-800">{titulo}</h2>
                 {mostrarVerTodo && (
                     <Link 
-                        to="/productos" 
+                        to={`/categoria/${titulo.toLowerCase()}`} 
                         className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1"
                     >
                         Ver todo
