@@ -1,6 +1,7 @@
 
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const emailService = require('./emailService');
 
 async function cancelarPedido(data) {
   const { idPedido } = data;
@@ -31,7 +32,24 @@ async function cancelarPedido(data) {
   const pedidoCancelado = await prisma.pedidos.update({
     where: { id_pedido: Number(idPedido) },
     data: { estado: "Cancelado" },
+    include: {
+      usuarios: true
+    }
   });
+
+  // Enviar correo de notificación de cancelación
+  try {
+    await emailService.enviarActualizacionEstadoPedido(
+      pedidoCancelado.usuarios.email,
+      `${pedidoCancelado.usuarios.nombre} ${pedidoCancelado.usuarios.apellido}`,
+      pedidoCancelado.id_pedido,
+      "Cancelado"
+    );
+    console.log('Correo de cancelación de pedido enviado exitosamente');
+  } catch (emailError) {
+    console.error('Error al enviar correo de cancelación:', emailError);
+    // No fallar la cancelación si el email falla
+  }
 
   return pedidoCancelado;
 
@@ -62,8 +80,26 @@ const editarEstadoPedido = async (data) => {
 
   const pedidoActualizado = await prisma.pedidos.update({
     where: { id_pedido: Number(idPedido) },
-    data: { estado: nuevoEstado }
+    data: { estado: nuevoEstado },
+    include: {
+      usuarios: true
+    }
   });
+
+  // Enviar correo de notificación de cambio de estado
+  try {
+    await emailService.enviarActualizacionEstadoPedido(
+      pedidoActualizado.usuarios.email,
+      `${pedidoActualizado.usuarios.nombre} ${pedidoActualizado.usuarios.apellido}`,
+      pedidoActualizado.id_pedido,
+      nuevoEstado
+    );
+    console.log('Correo de actualización de estado enviado exitosamente');
+  } catch (emailError) {
+    console.error('Error al enviar correo de actualización:', emailError);
+    // No fallar la actualización si el email falla
+  }
+
   return pedidoActualizado;
 }
 

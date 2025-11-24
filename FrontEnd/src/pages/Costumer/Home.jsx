@@ -8,8 +8,9 @@ function Home(){
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-4 py-8">
             <HeroCarousel />
 
-            
-            <SeccionProductos titulo="Novedades" limite={4} />
+            <SeccionProductos titulo="Celulares" limite={4} mostrarVerTodo={true} />
+            <SeccionProductos titulo="Ropa" limite={4} mostrarVerTodo={true} />
+            <SeccionProductos titulo="Alimentos" limite={4} mostrarVerTodo={true} />
         </div>
     )
 }

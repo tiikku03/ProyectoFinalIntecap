@@ -34,19 +34,20 @@ model pedidos {
 }
 
 model productos {
-  id_producto     Int               @id @default(autoincrement())
-  nombre          String            @db.VarChar(100)
-  descripcion     String?           @db.Text
-  precio          Decimal           @db.Decimal(10, 2)
-  stock           Int
-  categoria       String?           @db.VarChar(50)
-  subcategoria    String?           @db.VarChar(50)
-  url_imagen      String?           @db.VarChar(255)
-  fecha_agregado  DateTime?         @default(now()) @db.DateTime(0)
-  detalle_carrito detalle_carrito[]
-  detalle_pedido  detalle_pedido[]
-  resenas         resenas[]
-  wishlist        wishlist[]
+  id_producto      Int                @id @default(autoincrement())
+  nombre           String             @db.VarChar(100)
+  descripcion      String?            @db.Text
+  precio           Decimal            @db.Decimal(10, 2)
+  stock            Int
+  categoria        String?            @db.VarChar(50)
+  subcategoria     String?            @db.VarChar(50)
+  url_imagen       String?            @db.VarChar(255)
+  fecha_agregado   DateTime?          @default(now()) @db.DateTime(0)
+  detalle_carrito  detalle_carrito[]
+  detalle_pedido   detalle_pedido[]
+  detalle_wishlist detalle_wishlist[]
+  resenas          resenas[]
+  wishlist         wishlist[]
 }
 
 model resenas {
@@ -78,12 +79,13 @@ model usuarios {
 }
 
 model wishlist {
-  id_wishlist    Int        @id @default(autoincrement())
-  id_usuario     Int?
-  id_producto    Int?
-  fecha_agregado DateTime?  @default(now()) @db.DateTime(0)
-  usuarios       usuarios?  @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "wishlist_ibfk_1")
-  productos      productos? @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction, map: "wishlist_ibfk_2")
+  id_wishlist      Int                @id @default(autoincrement())
+  id_usuario       Int?
+  id_producto      Int?
+  fecha_agregado   DateTime?          @default(now()) @db.DateTime(0)
+  detalle_wishlist detalle_wishlist[]
+  usuarios         usuarios?          @relation(fields: [id_usuario], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "wishlist_ibfk_1")
+  productos        productos?         @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction, map: "wishlist_ibfk_2")
 
   @@index([id_producto], map: "id_producto")
   @@index([id_usuario], map: "id_usuario")
@@ -108,6 +110,18 @@ model detalle_carrito {
 
   @@id([CarritoID, ProductoID])
   @@index([ProductoID], map: "ProductoID")
+}
+
+model detalle_wishlist {
+  id_detalle_wishlist BigInt    @id @unique(map: "id_detalle_wishlist") @default(autoincrement()) @db.UnsignedBigInt
+  id_wishlist         Int
+  id_producto         Int
+  cantidad            Int
+  wishlist            wishlist  @relation(fields: [id_wishlist], references: [id_wishlist], onDelete: NoAction, onUpdate: NoAction, map: "detalle_wishlist_ibfk_1")
+  productos           productos @relation(fields: [id_producto], references: [id_producto], onDelete: NoAction, onUpdate: NoAction, map: "detalle_wishlist_ibfk_2")
+
+  @@index([id_producto], map: "id_producto")
+  @@index([id_wishlist], map: "id_wishlist")
 }
 
 enum pedidos_estado {

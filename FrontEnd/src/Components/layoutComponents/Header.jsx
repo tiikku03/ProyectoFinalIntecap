@@ -28,24 +28,34 @@ function Header(){
                         </button>
 
                         
-                        <Link to="/" className="text-xl font-bold text-gray-800">
-                            Mi Tienda
+                        <Link to="/" className="flex items-center gap-2">
+                            <span
+                                className="overflow-hidden flex items-center justify-center"
+                                style={{ height: '64px', width: '180px' }}
+                            >
+                                <img
+                                    src="http://detova.com/wp-content/uploads/2025/09/Smart-Shopping.png"
+                                    alt="SmartShopping Logo"
+                                    className="h-7 w-auto md:h-14 md:w-auto object-contain m-auto"
+                                    style={{ maxWidth: '100%', height: '28px' }}
+                                />
+                            </span>
                         </Link>
 
-                        <div className="flex items-center gap-4">
-                            <Link to="/wishlist" className="relative p-2 rounded-md hover:bg-gray-100 transition-colors">
-                                <FiHeart className="w-5 h-5 text-gray-700" />
+                        <div className="flex items-center gap-2 md:gap-4">
+                            <Link to="/wishlist" className="relative p-1 md:p-2 rounded-md hover:bg-gray-100 transition-colors">
+                                <FiHeart className="w-4 h-4 md:w-5 md:h-5 text-gray-700" />
                                 {wishlistCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] md:text-xs font-bold rounded-full h-4 w-4 md:h-5 md:w-5 flex items-center justify-center">
                                         {wishlistCount}
                                     </span>
                                 )}
                             </Link>
 
-                            <Link to="/carrito" className="relative p-2 rounded-md hover:bg-gray-100 transition-colors">
-                                <FiShoppingCart className="w-5 h-5 text-gray-700" />
+                            <Link to="/carrito" className="relative p-1 md:p-2 rounded-md hover:bg-gray-100 transition-colors">
+                                <FiShoppingCart className="w-4 h-4 md:w-5 md:h-5 text-gray-700" />
                                 {cantidadItems > 0 && (
-                                    <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                                    <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-[10px] md:text-xs font-bold rounded-full h-4 w-4 md:h-5 md:w-5 flex items-center justify-center">
                                         {cantidadItems}
                                     </span>
                                 )}
@@ -53,9 +63,9 @@ function Header(){
 
                             <button 
                                 onClick={() => setUserModalOpen(true)}
-                                className="p-2 rounded-md hover:bg-gray-100 transition-colors"
+                                className="p-1 md:p-2 rounded-md hover:bg-gray-100 transition-colors"
                             >
-                                <FiUser className="w-5 h-5 text-gray-700" />
+                                <FiUser className="w-4 h-4 md:w-5 md:h-5 text-gray-700" />
                             </button>
                         </div>
                     </div>

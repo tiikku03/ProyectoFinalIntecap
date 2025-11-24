@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@getbrevo/brevo": "^3.0.1",
     "@paypal/paypal-server-sdk": "^2.0.0",
     "@prisma/client": "^6.19.0",
     "bcryptjs": "^3.0.3",
@@ -14,12 +15,13 @@
     "prisma": "^6.19.0"
   },
   "scripts": {
-    "start": "prisma db push && node server.js",
+    "start": "prisma db push && node server.js && prisma generate && npm run seed",
     "dev": "nodemon server.js",
     "build": "prisma generate",
-    "seed": "node prisma/seed.js"
+    "seed": "node informacionDefaultDB.js",
+    "deploy": "prisma generate && npm run seed"
   },
   "prisma": {
-    "seed": "node prisma/seed.js"
+    "seed": "node informacionDefaultDB.js"
   }
 }

@@ -14,7 +14,12 @@ router.use(express.json());
 // ==================================================
 // CREAR PEDIDO DESDE CARRITO
 // ==================================================
-router.post('/crear-pedido', controllerCrearPedido);
+router.post('/crear-pedido', (req, res, next) => {
+    console.log('🔵 RUTA /pagos/crear-pedido LLAMADA');
+    console.log('Headers:', req.headers);
+    console.log('Body:', req.body);
+    next();
+}, controllerCrearPedido);
 
 // ==================================================
 // STRIPE - Crear intención de pago

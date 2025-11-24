@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const emailService = require('./emailService');
 
 /**
  * Crear una intención de pago con Stripe (SIMULADO - SIN API REAL)
@@ -125,17 +126,54 @@ async function capturarPagoPayPal(datos) {
  * Crear pedido desde el carrito
  */
 async function crearPedidoDesdeCarrito(datos) {
+    console.log('========== crearPedidoDesdeCarrito SERVICE ==========');
+    console.log('Datos recibidos:', JSON.stringify(datos, null, 2));
+
     const { idUsuario, datosEnvio, metodoPago, productos, total } = datos;
 
     try {
         // Validar que se enviaron productos
         if (!productos || productos.length === 0) {
+            console.log('ERROR: No se enviaron productos');
             throw {
                 status: 400,
                 message: 'No se enviaron productos para el pedido',
                 code: 'NO_PRODUCTS',
             };
         }
+
+        // Validar stock disponible para cada producto
+        console.log('Validando stock de productos...');
+        for (const item of productos) {
+            const producto = await prisma.productos.findUnique({
+                where: { id_producto: item.ProductoID },
+            });
+
+            if (!producto) {
+                throw {
+                    status: 404,
+                    message: `El producto con ID ${item.ProductoID} no existe`,
+                    code: 'PRODUCT_NOT_FOUND',
+                };
+            }
+
+            if (producto.stock < item.Cantidad) {
+                throw {
+                    status: 400,
+                    message: `Stock insuficiente para el producto "${producto.nombre}". Stock disponible: ${producto.stock}, cantidad solicitada: ${item.Cantidad}`,
+                    code: 'INSUFFICIENT_STOCK',
+                    producto: {
+                        id: producto.id_producto,
+                        nombre: producto.nombre,
+                        stockDisponible: producto.stock,
+                        cantidadSolicitada: item.Cantidad,
+                    },
+                };
+            }
+        }
+        console.log('✅ Stock validado correctamente');
+
+        console.log('Creando pedido en la base de datos...');
 
         // Crear el pedido
         const pedido = await prisma.pedidos.create({
@@ -161,7 +199,25 @@ async function crearPedidoDesdeCarrito(datos) {
             },
         });
 
+        console.log('Pedido creado en DB, ID:', pedido.id_pedido);
+
+        // Descontar el stock de los productos
+        console.log('Descontando stock de productos...');
+        for (const item of productos) {
+            await prisma.productos.update({
+                where: { id_producto: item.ProductoID },
+                data: {
+                    stock: {
+                        decrement: item.Cantidad,
+                    },
+                },
+            });
+            console.log(`Stock descontado: Producto ID ${item.ProductoID}, Cantidad: ${item.Cantidad}`);
+        }
+        console.log('✅ Stock actualizado correctamente');
+
         // Vaciar el carrito del usuario
+        console.log('Vaciando carrito del usuario...');
         const carrito = await prisma.carrito.findFirst({
             where: { id_usuario: idUsuario },
         });
@@ -170,6 +226,44 @@ async function crearPedidoDesdeCarrito(datos) {
             await prisma.detalle_carrito.deleteMany({
                 where: { CarritoID: carrito.id_carrito },
             });
+            console.log('Carrito vaciado');
+        }
+
+        // Enviar correo de confirmación de pedido
+        console.log('========== INICIANDO ENVÍO DE CORREO ==========');
+        try {
+            const emailDestino = datosEnvio.correo || datosEnvio.email;
+            const nombreCompleto = `${datosEnvio.nombre} ${datosEnvio.apellido}`;
+
+            console.log('Email destino:', emailDestino);
+            console.log('Nombre completo:', nombreCompleto);
+
+            // Preparar detalles del pedido para el correo
+            const detallesPedido = pedido.detalle_pedido.map(item => ({
+                nombre: item.productos.nombre,
+                cantidad: item.cantidad,
+                precio: item.productos.precio
+            }));
+
+            console.log('Detalles del pedido para correo:', detallesPedido);
+
+            console.log('Llamando a emailService.enviarConfirmacionPedido...');
+            await emailService.enviarConfirmacionPedido(
+                emailDestino,
+                nombreCompleto,
+                {
+                    id_pedido: pedido.id_pedido,
+                    fecha_pedido: pedido.fecha_pedido,
+                    estado: pedido.estado,
+                    total: pedido.total,
+                    items: detallesPedido
+                }
+            );
+            console.log(`✅ Correo de confirmación enviado exitosamente a: ${emailDestino}`);
+        } catch (emailError) {
+            console.error('❌ Error al enviar correo de confirmación:', emailError);
+            console.error('Stack trace:', emailError.stack);
+            // No fallar la creación del pedido si el email falla
         }
 
         return pedido;
