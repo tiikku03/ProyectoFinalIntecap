@@ -15,11 +15,11 @@
     "prisma": "^6.19.0"
   },
   "scripts": {
-    "start": "prisma db push && node server.js",
+    "start": "prisma db push && node server.js && prisma generate && npm run seed",
     "dev": "nodemon server.js",
     "build": "prisma generate",
     "seed": "node informacionDefaultDB.js",
-    "deploy": "prisma generate && prisma db push && npm run seed"
+    "deploy": "prisma generate && npm run seed"
   },
   "prisma": {
     "seed": "node informacionDefaultDB.js"
