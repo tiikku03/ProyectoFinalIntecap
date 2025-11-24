@@ -1,24 +1,25 @@
 const {PrismaClient} = require("@prisma/client");
-const { json } = require("express");
 const prisma = new PrismaClient();
 
 async function informacionDefaultDB() {
     try {
-        await prisma.usuarios.createMany(
-    {
-        data: [
-            {
-             nombre: "Emilio",
-             apellido: "Gonzalez",
-             email: "emiliogonzalez@example.com",
-             contrase_a: "123456789",
-             rol: "admin"
-            }
-        ]
-    }
-)
+        await prisma.usuarios.createMany({
+            data: [
+                {
+                    nombre: "Emilio",
+                    apellido: "Gonzalez",
+                    email: "emiliogonzalez@example.com",
+                    contrase_a: "123456789",
+                    rol: "admin"
+                }
+            ],
+            skipDuplicates: true
+        });
 
-const productosDefault = JSON.parse([
+        console.log("✓ Usuarios predeterminados insertados");
+
+       
+        const productosDefault = [
   {
     "nombre": "Samsung Galaxy Z Flip 7",
     "descripcion": "Teléfono plegable de bolsillo con un diseño más delgado y durable, equipado con el procesador Exynos 2500, una pantalla principal de 6.9 pulgadas y una pantalla exterior de 4.1 pulgadas",
@@ -669,17 +670,29 @@ const productosDefault = JSON.parse([
     "url_imagen": "https://walmartgt.vtexassets.com/arquivos/ids/898985-800-450?v=638968749030000000&width=800&height=450&aspect=true",
     "fecha_agregado": "2025-11-12T02:18:23.000Z"
   }
-])
+        ];
 
-await prisma.productos.createMany({
-  data: productosDefault,
-  skipDuplicates: true
-})
+        
+        await prisma.productos.createMany({
+            data: productosDefault,
+            skipDuplicates: true
+        });
+
     } catch (error) {
-        console.error("Error al insertar datos por defecto:", error);
+        process.exit(1);
+    } finally {
+        await prisma.$disconnect();
     }
-
 }
-
-informacionDefaultDB()
+if (require.main === module) {
+    informacionDefaultDB()
+        .then(() => {
+            console.log("✓ Proceso completado exitosamente");
+            process.exit(0);
+        })
+        .catch((error) => {
+            console.error("❌ Error en el proceso:", error);
+            process.exit(1);
+        });
+}
 

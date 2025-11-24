@@ -18,7 +18,8 @@
     "start": "prisma db push && node server.js",
     "dev": "nodemon server.js",
     "build": "prisma generate",
-    "postinstall": "node informacionDefaultDB.js"
+    "seed": "node informacionDefaultDB.js",
+    "deploy": "prisma generate && prisma db push && npm run seed"
   },
   "prisma": {
     "seed": "node informacionDefaultDB.js"
