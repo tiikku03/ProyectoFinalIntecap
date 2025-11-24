@@ -21,15 +21,19 @@ https://proyectofinal-backend-production-f665.up.railway.app//productos/leerprod
 https://proyectofinal-backend-production-f665.up.railway.app//usuarios/crearusuario
 */
 
+// CORS primero
 app.use(cors({
-  origin: true, 
+  origin: (origin, callback) => callback(null, true),
   credentials: true
 }));
 
-
+// Helmet DESPUÉS y con configuraciones especiales
 app.use(helmet({
   crossOriginResourcePolicy: false,
+  crossOriginEmbedderPolicy: false,
+  crossOriginOpenerPolicy: false,
 }));
+
 
 app.use(express.json());
 
