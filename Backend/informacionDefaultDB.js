@@ -9,7 +9,7 @@ async function informacionDefaultDB() {
                 {
                     nombre: "Emilio",
                     apellido: "Gonzalez",
-                    email: "emiliogonzalez@example.com",
+                    email: "emiliogonzalez@gmail.com",
                     contrase_a: await bcrypt.hash("123456789", 10),
                     rol: "admin"
                 }
@@ -19,7 +19,7 @@ async function informacionDefaultDB() {
 
         console.log("✓ Usuarios predeterminados insertados");
 
-       
+       /* 
         const productosDefault = [
   {
     "nombre": "Samsung Galaxy Z Flip 7",
@@ -677,7 +677,7 @@ async function informacionDefaultDB() {
         await prisma.productos.createMany({
             data: productosDefault,
             skipDuplicates: true
-        });
+        }); */
 
     } catch (error) {
         process.exit(1);
