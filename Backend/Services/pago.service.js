@@ -142,6 +142,37 @@ async function crearPedidoDesdeCarrito(datos) {
             };
         }
 
+        // Validar stock disponible para cada producto
+        console.log('Validando stock de productos...');
+        for (const item of productos) {
+            const producto = await prisma.productos.findUnique({
+                where: { id_producto: item.ProductoID },
+            });
+
+            if (!producto) {
+                throw {
+                    status: 404,
+                    message: `El producto con ID ${item.ProductoID} no existe`,
+                    code: 'PRODUCT_NOT_FOUND',
+                };
+            }
+
+            if (producto.stock < item.Cantidad) {
+                throw {
+                    status: 400,
+                    message: `Stock insuficiente para el producto "${producto.nombre}". Stock disponible: ${producto.stock}, cantidad solicitada: ${item.Cantidad}`,
+                    code: 'INSUFFICIENT_STOCK',
+                    producto: {
+                        id: producto.id_producto,
+                        nombre: producto.nombre,
+                        stockDisponible: producto.stock,
+                        cantidadSolicitada: item.Cantidad,
+                    },
+                };
+            }
+        }
+        console.log('✅ Stock validado correctamente');
+
         console.log('Creando pedido en la base de datos...');
 
         // Crear el pedido
@@ -169,6 +200,21 @@ async function crearPedidoDesdeCarrito(datos) {
         });
 
         console.log('Pedido creado en DB, ID:', pedido.id_pedido);
+
+        // Descontar el stock de los productos
+        console.log('Descontando stock de productos...');
+        for (const item of productos) {
+            await prisma.productos.update({
+                where: { id_producto: item.ProductoID },
+                data: {
+                    stock: {
+                        decrement: item.Cantidad,
+                    },
+                },
+            });
+            console.log(`Stock descontado: Producto ID ${item.ProductoID}, Cantidad: ${item.Cantidad}`);
+        }
+        console.log('✅ Stock actualizado correctamente');
 
         // Vaciar el carrito del usuario
         console.log('Vaciando carrito del usuario...');
