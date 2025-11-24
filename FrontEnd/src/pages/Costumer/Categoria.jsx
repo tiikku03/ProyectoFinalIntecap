@@ -15,7 +15,7 @@ function Categoria() {
     const [mostrarFiltros, setMostrarFiltros] = useState(false);
     const [filtros, setFiltros] = useState({
         precioMin: 0,
-        precioMax: 50000,
+        precioMax: 20000,
         ordenPrecio: ""
     });
     const apiUrl = import.meta.env.VITE_API_URL;

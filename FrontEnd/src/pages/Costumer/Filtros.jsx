@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 function Filtros({ onFiltrosChange }) {
     const [precioMin, setPrecioMin] = useState(0);
-    const [precioMax, setPrecioMax] = useState(500);
+    const [precioMax, setPrecioMax] = useState(20000);
     const [ordenPrecio, setOrdenPrecio] = useState("");
 
     useEffect(() => {
@@ -26,12 +26,12 @@ function Filtros({ onFiltrosChange }) {
                             Precio Mínimo: ${precioMin}
                         </label>
                         <input
-                            type="range"
-                            min="0"
-                            max="500"
-                            step="10"
-                            value={precioMin}
-                            onChange={(e) => setPrecioMin(Number(e.target.value))}
+                             type="range"
+                             min="0"
+                             max="20000"
+                             step="10"
+                             value={precioMin}
+                             onChange={e => setPrecioMin(Number(e.target.value))}
                             className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
                         />
                     </div>
@@ -42,7 +42,7 @@ function Filtros({ onFiltrosChange }) {
                         <input
                             type="range"
                             min="0"
-                            max="500"
+                            max="20000"
                             step="10"
                             value={precioMax}
                             onChange={(e) => setPrecioMax(Number(e.target.value))}
