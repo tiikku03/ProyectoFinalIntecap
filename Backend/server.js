@@ -20,13 +20,12 @@ https://proyectofinalintecap-production.up.railway.app/
 https://proyectofinal-backend-production-f665.up.railway.app//productos/leerproductos?page=1
 https://proyectofinal-backend-production-f665.up.railway.app//usuarios/crearusuario
 */
+
 app.use(cors({
-  origin: [
-    'https://proyectofinalintecap-production.up.railway.app',
-    'https://proyectofinal-backend-production-f665.up.railway.app/',
-    'http://localhost:4000'
-  ]
+  origin: true, 
+  credentials: true
 }));
+
 
 app.use(helmet({
   crossOriginResourcePolicy: false,
