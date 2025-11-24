@@ -3,13 +3,14 @@ const { json } = require("express");
 const prisma = new PrismaClient();
 
 async function informacionDefaultDB() {
-    await prisma.usuarios.createMany(
+    try {
+        await prisma.usuarios.createMany(
     {
         data: [
             {
              nombre: "Emilio",
              apellido: "Gonzalez",
-             correo: "emiliogonzalez@example.com",
+             email: "emiliogonzalez@example.com",
              contrase_a: "123456789",
              rol: "admin"
             }
@@ -674,6 +675,9 @@ await prisma.productos.createMany({
   data: productosDefault,
   skipDuplicates: true
 })
+    } catch (error) {
+        console.error("Error al insertar datos por defecto:", error);
+    }
 
 }
 
