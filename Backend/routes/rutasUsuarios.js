@@ -5,6 +5,7 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const { successResponse, errorResponse } = require('../utils/responseHelper');
 const { obtenerUsuarios } = require('../Controllers/usuarios.controller');
+const emailService = require('../Services/emailService');
 
 router.use(express.json());
 
@@ -45,6 +46,18 @@ router.post("/crearusuario", async (req, res) => {
         id_usuario: nuevoUsuario.id_usuario
       }
     });
+
+    // Enviar correo de confirmación de registro
+    try {
+      await emailService.enviarConfirmacionRegistro(
+        nuevoUsuario.email,
+        `${nuevoUsuario.nombre} ${nuevoUsuario.apellido}`
+      );
+      console.log('Correo de bienvenida enviado exitosamente');
+    } catch (emailError) {
+      console.error('Error al enviar correo de bienvenida:', emailError);
+      // No fallar el registro si el email falla
+    }
 
     return successResponse(res, 201, "Usuario creado correctamente", {
       id_usuario: nuevoUsuario.id_usuario,

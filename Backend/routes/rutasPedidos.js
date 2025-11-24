@@ -4,6 +4,7 @@ const { obtenerPedidoPorId } = require("../Services/pedidos.service.js");
 const router = express.Router();
 const { PrismaClient } = require("@prisma/client");
 const { successResponse, errorResponse } = require('../utils/responseHelper');
+const emailService = require('../Services/emailService');
 
 const prisma = new PrismaClient();
 
@@ -22,8 +23,15 @@ router.post("/crearpedido", async (req, res) => {
       error: null,
     };
 
-    let { usuario_id, productos, metodoPago, estado, direccion, total } =
-      req.body;
+    let {
+      usuario_id,
+      productos,
+      metodoPago,
+      estado,
+      direccion,
+      total,
+      datosEnvio // Nuevo: datos del formulario de envío
+    } = req.body;
 
     // Si productos es un string, parsearlo a array
     if (typeof productos === "string") {
@@ -55,6 +63,8 @@ router.post("/crearpedido", async (req, res) => {
       },
     });
 
+    // Crear detalles del pedido y obtener información de productos
+    const detallesPedido = [];
     for (let producto of productos) {
       await prisma.detalle_pedido.create({
         data: {
@@ -63,6 +73,57 @@ router.post("/crearpedido", async (req, res) => {
           id_producto: Number(producto.productoId)
         },
       });
+
+      // Obtener información del producto para el correo
+      const productoInfo = await prisma.productos.findUnique({
+        where: { id_producto: Number(producto.productoId) }
+      });
+
+      detallesPedido.push({
+        nombre: productoInfo.nombre,
+        cantidad: Number(producto.cantidad),
+        precio: productoInfo.precio
+      });
+    }
+
+    // Determinar el email y nombre para el correo
+    let emailDestino, nombreCompleto;
+
+    if (datosEnvio && datosEnvio.email) {
+      // Si se proporcionaron datos del formulario, usarlos
+      emailDestino = datosEnvio.email;
+      nombreCompleto = `${datosEnvio.nombre || ''} ${datosEnvio.apellido || ''}`.trim();
+    } else {
+      // Si no, obtener del usuario registrado
+      const usuario = await prisma.usuarios.findUnique({
+        where: { id_usuario: Number(usuario_id) }
+      });
+
+      if (usuario) {
+        emailDestino = usuario.email;
+        nombreCompleto = `${usuario.nombre} ${usuario.apellido}`;
+      }
+    }
+
+    // Enviar correo de confirmación de pedido
+    if (emailDestino) {
+      try {
+        await emailService.enviarConfirmacionPedido(
+          emailDestino,
+          nombreCompleto,
+          {
+            id_pedido: agregarNuevoPedido.id_pedido,
+            fecha_pedido: agregarNuevoPedido.fecha_pedido,
+            estado: agregarNuevoPedido.estado,
+            total: agregarNuevoPedido.total,
+            items: detallesPedido
+          }
+        );
+        console.log(`Correo de confirmación enviado a: ${emailDestino}`);
+      } catch (emailError) {
+        console.error('Error al enviar correo de confirmación:', emailError);
+        // No fallar la creación del pedido si el email falla
+      }
     }
 
     return successResponse(res, 201, "Pedido creado correctamente", {

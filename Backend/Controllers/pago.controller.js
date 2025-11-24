@@ -12,9 +12,17 @@ const { successResponse, errorResponse } = require('../utils/responseHelper');
  */
 async function controllerCrearPedido(req, res) {
     try {
+        console.log('========== CREAR PEDIDO ENDPOINT LLAMADO ==========');
+        console.log('Body recibido:', JSON.stringify(req.body, null, 2));
+
         const { idUsuario, datosEnvio, metodoPago, productos, total } = req.body;
 
+        console.log('idUsuario:', idUsuario);
+        console.log('datosEnvio:', datosEnvio);
+        console.log('metodoPago:', metodoPago);
+
         if (!idUsuario || !datosEnvio || !metodoPago) {
+            console.log('ERROR: Faltan datos requeridos');
             return errorResponse(
                 res,
                 400,
@@ -23,6 +31,7 @@ async function controllerCrearPedido(req, res) {
             );
         }
 
+        console.log('Llamando a crearPedidoDesdeCarrito...');
         const resultado = await crearPedidoDesdeCarrito({
             idUsuario,
             datosEnvio,
@@ -30,6 +39,7 @@ async function controllerCrearPedido(req, res) {
             productos,
             total,
         });
+        console.log('Pedido creado exitosamente:', resultado.id_pedido);
 
         return successResponse(
             res,
