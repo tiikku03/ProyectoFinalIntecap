@@ -15,7 +15,18 @@ const prisma = new PrismaClient();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+/*
+https://proyectofinalintecap-production.up.railway.app/
+https://proyectofinal-backend-production-f665.up.railway.app//productos/leerproductos?page=1
+https://proyectofinal-backend-production-f665.up.railway.app//usuarios/crearusuario
+*/
+app.use(cors({
+  origin: [
+    'https://proyectofinalintecap-production.up.railway.app',
+    'https://proyectofinal-backend-production-f665.up.railway.app/',
+    'http://localhost:4000'
+  ]
+}));
 
 app.use(helmet({
   crossOriginResourcePolicy: false,
