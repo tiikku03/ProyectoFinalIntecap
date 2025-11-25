@@ -5,12 +5,11 @@ import { Link } from "react-router-dom";
 function HeroCarousel() {
     const [currentSlide, setCurrentSlide] = useState(0);
 
-    // Array de URLs de imágenes personalizadas
+    
     const images = [
         "https://elsolweb.tv/wp-content/uploads/2020/02/tienda-samsung1.jpg",
         "https://soyummy.com/wp-content/uploads/2024/08/empty-aisles-at-a-supermarket-grocery-shopping-concepts-stockpack-istock-scaled-1-1024x674-1.jpg",
         "https://blogs.hoy.es/red-decora/wp-content/uploads/sites/66/2014/02/Spar-supermercado-en-Budapest-dise%C3%B1o-por-LAB5-architects_12.jpg"
-        // Agrega aquí tus propias URLs
     ];
 
     // Auto-play del carousel
