@@ -86,7 +86,7 @@ function TarjetaPedido({ pedido }) {
                 <div>
                     <p className="text-sm text-gray-600">Total</p>
                     <p className="text-2xl font-bold text-gray-900">
-                        ${parseFloat(pedido.total).toFixed(2)}
+                        Q{parseFloat(pedido.total).toFixed(2)}
                     </p>
                 </div>
                 <button
