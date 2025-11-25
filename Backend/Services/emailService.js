@@ -1,18 +1,15 @@
 const Brevo = require('@getbrevo/brevo');
 
-// Configurar Brevo
 const apiInstance = new Brevo.TransactionalEmailsApi();
 const apiKey = apiInstance.authentications['apiKey'];
 apiKey.apiKey = process.env.BREVO_API_KEY;
 
-/**
- * Servicio de envío de correos electrónicos usando Brevo
- */
+
 class EmailService {
     /**
      * Enviar correo de confirmación de registro
-     * @param {string} email - Email del destinatario
-     * @param {string} nombre - Nombre del usuario
+     * @param {string} email 
+     * @param {string} nombre 
      */
     async enviarConfirmacionRegistro(email, nombre) {
         try {

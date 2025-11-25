@@ -11,7 +11,7 @@ function Footer(){
                     <div>
                         <div className="flex items-center gap-3 mb-6">
                             <FiShoppingBag className="w-7 h-7 md:w-8 md:h-8 text-blue-400" />
-                            <h3 className="text-xl md:text-2xl font-bold text-white">TiendaOnline</h3>
+                            <h3 className="text-xl md:text-2xl font-bold text-white">smartShopping</h3>
                         </div>
                         <p className="text-base md:text-lg text-gray-400 mb-6 leading-relaxed">
                             Tu destino para las mejores compras en línea.<br />
