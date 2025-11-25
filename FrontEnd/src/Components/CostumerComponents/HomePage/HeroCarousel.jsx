@@ -54,7 +54,7 @@ function HeroCarousel() {
             <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center px-6 md:px-12 z-10">
                     <h2 className="text-2xl md:text-4xl font-bold text-white mb-2 md:mb-4">
-                        Bienvenido a TiendaOnline
+                        Bienvenido a smartShopping
                     </h2>
                     <p className="text-sm md:text-lg text-white mb-4 md:mb-6">
                         Descubre los mejores productos con calidad garantizada

@@ -45,7 +45,7 @@ function ResumenPedidoPago({ carrito, totales }) {
                                     Cantidad: <span className="font-semibold">{item.Cantidad}</span>
                                 </span>
                                 <span className="text-sm font-semibold text-gray-900">
-                                    ${item.subtotal}
+                                    Q{item.subtotal}
                                 </span>
                             </div>
                         </div>
@@ -60,7 +60,7 @@ function ResumenPedidoPago({ carrito, totales }) {
             <div className="space-y-3 mb-4">
                 <div className="flex justify-between text-gray-700">
                     <span>Subtotal</span>
-                    <span className="font-semibold">${subtotal}</span>
+                    <span className="font-semibold">Q{subtotal}</span>
                 </div>
 
                 <div className="flex justify-between text-gray-700">
@@ -68,7 +68,7 @@ function ResumenPedidoPago({ carrito, totales }) {
                     {parseFloat(envio) === 0 ? (
                         <span className="text-green-600 font-semibold">GRATIS</span>
                     ) : (
-                        <span className="font-semibold">${envio}</span>
+                        <span className="font-semibold">Q{envio}</span>
                     )}
                 </div>
             </div>

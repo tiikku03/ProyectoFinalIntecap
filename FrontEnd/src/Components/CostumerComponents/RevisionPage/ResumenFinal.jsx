@@ -50,13 +50,13 @@ function ResumenFinal({ carrito, totales }) {
                             <div className="flex justify-between items-center">
                                 <div className="text-xs text-gray-600">
                                     <span className="font-medium">
-                                        ${parseFloat(item.productos.precio).toFixed(2)}
+                                        Q{parseFloat(item.productos.precio).toFixed(2)}
                                     </span>
                                     {" × "}
                                     <span className="font-semibold">{item.Cantidad}</span>
                                 </div>
                                 <div className="text-sm font-bold text-gray-900">
-                                    ${item.subtotal}
+                                    Q{item.subtotal}
                                 </div>
                             </div>
                         </div>
@@ -68,7 +68,7 @@ function ResumenFinal({ carrito, totales }) {
             <div className="border-t pt-4 space-y-2">
                 <div className="flex justify-between text-sm text-gray-700">
                     <span>Subtotal</span>
-                    <span className="font-semibold">${subtotal}</span>
+                    <span className="font-semibold">Q{subtotal}</span>
                 </div>
 
                 <div className="flex justify-between text-sm text-gray-700">
@@ -76,7 +76,7 @@ function ResumenFinal({ carrito, totales }) {
                     {parseFloat(envio) === 0 ? (
                         <span className="text-green-600 font-semibold">GRATIS</span>
                     ) : (
-                        <span className="font-semibold">${envio}</span>
+                        <span className="font-semibold">Q{envio}</span>
                     )}
                 </div>
 
@@ -84,7 +84,7 @@ function ResumenFinal({ carrito, totales }) {
                     <div className="flex justify-between items-center">
                         <span className="text-lg font-bold text-gray-900">Total</span>
                         <span className="text-2xl font-bold text-blue-600">
-                            ${total}
+                            Q{total}
                         </span>
                     </div>
                 </div>

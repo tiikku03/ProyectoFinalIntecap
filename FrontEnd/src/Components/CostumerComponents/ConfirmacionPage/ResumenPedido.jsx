@@ -58,7 +58,7 @@ function ResumenPedido({ pedido }) {
                             <div className="flex justify-between items-center">
                                 <div className="text-xs text-gray-600">
                                     <span className="font-medium">
-                                        ${parseFloat(item.productos.precio).toFixed(2)}
+                                        Q{parseFloat(item.productos.precio).toFixed(2)}
                                     </span>
                                     {" × "}
                                     <span className="font-semibold">
@@ -66,7 +66,7 @@ function ResumenPedido({ pedido }) {
                                     </span>
                                 </div>
                                 <div className="text-sm font-bold text-gray-900">
-                                    $
+                                    Q
                                     {(
                                         parseFloat(item.productos.precio) *
                                         item.cantidad
@@ -82,7 +82,7 @@ function ResumenPedido({ pedido }) {
             <div className="border-t pt-4 space-y-2">
                 <div className="flex justify-between text-sm text-gray-700">
                     <span>Subtotal</span>
-                    <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                    <span className="font-semibold">Q{subtotal.toFixed(2)}</span>
                 </div>
 
                 <div className="flex justify-between text-sm text-gray-700">
@@ -90,7 +90,7 @@ function ResumenPedido({ pedido }) {
                     {envio === 0 ? (
                         <span className="text-green-600 font-semibold">GRATIS</span>
                     ) : (
-                        <span className="font-semibold">${envio.toFixed(2)}</span>
+                        <span className="font-semibold">Q{envio.toFixed(2)}</span>
                     )}
                 </div>
 
@@ -100,7 +100,7 @@ function ResumenPedido({ pedido }) {
                             Total Pagado
                         </span>
                         <span className="text-2xl font-bold text-blue-600">
-                            ${total.toFixed(2)}
+                            Q{total.toFixed(2)}
                         </span>
                     </div>
                 </div>
